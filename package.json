@@ -7,6 +7,10 @@
     "test": "mocha --reporter list test/*.js"
   },
   "author": "Wei Lu",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/weilu/bip39.git"
+  },
   "license": "ISC",
   "dependencies": {
     "crypto-js": "^3.1.2-2"
