@@ -1,0 +1,17 @@
+{
+  "name": "bip39",
+  "version": "0.0.0",
+  "description": "Bitcoin BIP39: Mnemonic code for generating deterministic keys",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha test"
+  },
+  "author": "Wei Lu",
+  "license": "ISC",
+  "dependencies": {
+    "crypto-js": "^3.1.2-2"
+  },
+  "devDependencies": {
+    "mocha": "^1.17.1"
+  }
+}
