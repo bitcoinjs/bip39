@@ -8,13 +8,17 @@ JavaScript implementation of [Bitcoin BIP39](https://github.com/bitcoin/bips/blo
 `npm install bip39`
 
 ```javascript
-bip39 = require('bip39')
-bip39.mnemonicToSeed('crazy horse battery staple')
-// wait for it...
-// 'd6b0f05e5e039b4b4adb72e84f3d5df121cc2dba8b236a1b3a5a8d487b9641096717364fc96e24ddbc648e0e6badbff72332e7d44dc2a42796c2d7e58ee632de'
+var BIP39 = require('bip39')
+
+bip39 = new BIP39() // 'en' is the default language
+
+bip39.entropyToMnemonic('1337') // hex input
+// 'basket actual'
+
+bip39.mnemonicToSeed('basket actual') // wait for it...
+// '5cf2d4a8b0355e90295bdfc565a022a409af063d5365bb57bf74d9528f494bfa4400f53d8349b80fdae44082d7f9541e1dba2b003bcfec9d0d53781ca676651f'
 ```
 
 ## TODO
 
-- seedToMnemonic
 - generateMnemonic
