@@ -1,5 +1,6 @@
 var Crypto = require('crypto-js')
-var Wordlists = require('require-json-tree')('./wordlists')
+var path = require('path')
+var Wordlists = require('require-json-tree')(path.join(__dirname, 'wordlists'))
 
 module.exports = BIP39
 
