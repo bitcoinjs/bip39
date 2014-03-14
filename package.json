@@ -13,7 +13,8 @@
   },
   "license": "ISC",
   "dependencies": {
-    "crypto-js": "^3.1.2-2"
+    "crypto-js": "^3.1.2-2",
+    "require-json-tree": "~1.0.0"
   },
   "devDependencies": {
     "mocha": "^1.17.1"
