@@ -1,7 +1,7 @@
 var Crypto = require('crypto-js')
 var path = require('path')
 var includeFolder = require('include-folder')
-var Wordlists = includeFolder('./wordlists')
+var Wordlists = includeFolder(path.join(__dirname, 'wordlists'))
 
 module.exports = BIP39
 
