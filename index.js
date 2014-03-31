@@ -2,6 +2,7 @@ var Crypto = require('crypto-js')
 var path = require('path')
 var includeFolder = require('include-folder')
 var Wordlists = includeFolder(path.join(__dirname, 'wordlists'))
+var randomBytes = require('crypto').randomBytes
 
 module.exports = BIP39
 
@@ -31,8 +32,8 @@ BIP39.prototype.entropyToMnemonic = function(entropy){
 }
 
 BIP39.prototype.generateMnemonic = function(strength){
-  var strength = strength || 128
-  var entropy = crypto.randomBytes(strength/8).toString('hex')
+  strength = strength || 128
+  var entropy = randomBytes(strength/8).toString('hex')
   return this.entropyToMnemonic(entropy)
 }
 
