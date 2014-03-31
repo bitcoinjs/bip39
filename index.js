@@ -30,6 +30,12 @@ BIP39.prototype.entropyToMnemonic = function(entropy){
   }, this).join(' ')
 }
 
+BIP39.prototype.generateMnemonic = function(strength){
+  var strength = strength || 128
+  var entropy = crypto.randomBytes(strength/8).toString('hex')
+  return this.entropyToMnemonic(entropy)
+}
+
 function salt(password) {
   return encode_utf8('mnemonic' + (password || ''))
 }
