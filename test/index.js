@@ -26,3 +26,24 @@ describe('entropyToMnemonic', function(){
     })
   })
 })
+
+describe('validate', function(){
+  vectors.forEach(function(v, i){
+    it('passes check ' + i, function(){
+      assert(bip39.validate(v[1]))
+    })
+  })
+
+  it('fails for mnemonics of wrong length', function(){
+    assert(!bip39.validate('sleep kitten'))
+    assert(!bip39.validate('sleep kitten sleep kitten sleep kitten'))
+  })
+
+  it('fails for mnemonics that contains words not from the word list', function(){
+    assert(!bip39.validate("turtle front uncle idea crush write shrug there lottery flower risky shell"))
+  })
+
+  it('fails for mnemonics of invalid checksum', function(){
+    assert(!bip39.validate('sleep kitten sleep kitten sleep kitten sleep kitten sleep kitten sleep kitten'))
+  })
+})

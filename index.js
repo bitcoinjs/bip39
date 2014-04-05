@@ -37,6 +37,38 @@ BIP39.prototype.generateMnemonic = function(strength){
   return this.entropyToMnemonic(entropy)
 }
 
+BIP39.prototype.validate = function(mnemonic){
+  mnemonic = mnemonic.split(' ')
+
+  if(mnemonic.length % 3 !== 0) return false
+
+  var wordlist = this.wordlist
+  var belongToList = mnemonic.reduce(function(memo, m){
+    return memo && (wordlist.indexOf(m) > -1)
+  }, true)
+
+  if(!belongToList) return false
+
+  var bits = mnemonic.map(function(m){
+    var id = wordlist.indexOf(m)
+    return lpad(id.toString(2), '0', 11)
+  }).join('')
+
+  var length = bits.length
+  var dividerIndex = Math.floor(length / 33) * 32
+  var checksum = bits.substring(dividerIndex)
+
+  var data = bits.substring(0, dividerIndex)
+  var bytes = data.match(/(.{1,8})/g).map(function(bin){
+    return parseInt(bin, 2)
+  })
+  var hash = Crypto.SHA256(bytesToWordArray(bytes))
+  var checksumBits = bytesToBinary(wordsToBytes(hash.words))
+  var checksum2 = checksumBits.substr(0, length - dividerIndex)
+
+  return checksum === checksum2
+}
+
 function salt(password) {
   return encode_utf8('mnemonic' + (password || ''))
 }
