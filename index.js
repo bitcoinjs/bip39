@@ -2,7 +2,7 @@ var Crypto = require('crypto-js')
 var path = require('path')
 var includeFolder = require('include-folder')
 var Wordlists = includeFolder(path.join(__dirname, 'wordlists'))
-var randomBytes = require('crypto').randomBytes
+var crypto = require('crypto')
 
 module.exports = BIP39
 
@@ -17,14 +17,14 @@ BIP39.prototype.mnemonicToSeed = function(mnemonic, password){
 }
 
 BIP39.prototype.entropyToMnemonic = function(entropy){
-  var entropyBytes = hexToBytes(entropy)
-  var bits = bytesToBinary(entropyBytes)
+  var entropyBuffer = new Buffer(entropy, 'hex')
+  var hash = crypto.createHash('sha256').update(entropyBuffer).digest()
 
-  var hash = Crypto.SHA256(bytesToWordArray(entropyBytes))
-  var checksumBits = bytesToBinary(wordsToBytes(hash.words))
-  var checksum = checksumBits.substr(0, bits.length / 32)
+  var combined = Buffer.concat([entropyBuffer, hash])
+  var bitLength = entropyBuffer.length * 8 + entropyBuffer.length / 4
+  var bits = bytesToBinary([].slice.call(combined)).substr(0, bitLength)
 
-  var chunks = (bits + checksum).match(/(.{1,11})/g)
+  var chunks = (bits).match(/(.{1,11})/g)
   return chunks.map(function(binary){
     var index = parseInt(binary, 2)
     return this.wordlist[index]
@@ -33,7 +33,7 @@ BIP39.prototype.entropyToMnemonic = function(entropy){
 
 BIP39.prototype.generateMnemonic = function(strength){
   strength = strength || 128
-  var entropy = randomBytes(strength/8).toString('hex')
+  var entropy = crypto.randomBytes(strength/8).toString('hex')
   return this.entropyToMnemonic(entropy)
 }
 
@@ -78,12 +78,6 @@ function encode_utf8(s){
 }
 
 //=========== helper methods from bitcoinjs-lib ========
-
-function hexToBytes(hex) {
-  return hex.match(/../g).map(function(x) {
-    return parseInt(x,16)
-  });
-}
 
 function bytesToBinary(bytes) {
   return bytes.map(function(x) {
