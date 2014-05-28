@@ -1,4 +1,4 @@
-var Crypto = require('crypto-js')
+var CryptoJS = require('crypto-js')
 var path = require('path')
 var includeFolder = require('include-folder')
 var Wordlists = includeFolder(path.join(__dirname, 'wordlists'))
@@ -12,8 +12,8 @@ function BIP39(language){
 }
 
 BIP39.prototype.mnemonicToSeed = function(mnemonic, password){
-  var options = {iterations: 2048, hasher: Crypto.algo.SHA512, keySize: 512/32}
-  return Crypto.PBKDF2(mnemonic, salt(password), options).toString(Crypto.enc.Hex)
+  var options = {iterations: 2048, hasher: CryptoJS.algo.SHA512, keySize: 512/32}
+  return CryptoJS.PBKDF2(mnemonic, salt(password), options).toString(CryptoJS.enc.Hex)
 }
 
 BIP39.prototype.entropyToMnemonic = function(entropy){
