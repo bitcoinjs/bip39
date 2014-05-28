@@ -62,8 +62,8 @@ BIP39.prototype.validate = function(mnemonic){
   var bytes = data.match(/(.{1,8})/g).map(function(bin){
     return parseInt(bin, 2)
   })
-  var hash = Crypto.SHA256(bytesToWordArray(bytes))
-  var checksumBits = bytesToBinary(wordsToBytes(hash.words))
+  var hash = crypto.createHash('sha256').update(new Buffer(bytes)).digest()
+  var checksumBits = bytesToBinary([].slice.call(hash))
   var checksum2 = checksumBits.substr(0, length - dividerIndex)
 
   return checksum === checksum2
@@ -83,26 +83,6 @@ function bytesToBinary(bytes) {
   return bytes.map(function(x) {
     return lpad(x.toString(2), '0', 8)
   }).join('');
-}
-
-function bytesToWordArray(bytes) {
-  return new Crypto.lib.WordArray.init(bytesToWords(bytes), bytes.length)
-}
-
-function bytesToWords(bytes) {
-    var words = [];
-    for (var i = 0, b = 0; i < bytes.length; i++, b += 8) {
-        words[b >>> 5] |= bytes[i] << (24 - b % 32);
-    }
-    return words;
-}
-
-function wordsToBytes(words) {
-    var bytes = [];
-    for (var b = 0; b < words.length * 32; b += 8) {
-        bytes.push((words[b >>> 5] >>> (24 - b % 32)) & 0xFF);
-    }
-    return bytes;
 }
 
 function lpad(str, padString, length) {
