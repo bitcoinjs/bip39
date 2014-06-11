@@ -4,7 +4,8 @@
   "description": "Bitcoin BIP39: Mnemonic code for generating deterministic keys",
   "main": "index.js",
   "scripts": {
-    "test": "mocha --reporter list test/*.js"
+    "test": "mocha --reporter list test/*.js",
+    "compile": "browserify index.js -s BIP39 > bip39.js"
   },
   "author": "Wei Lu",
   "repository": {
