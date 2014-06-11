@@ -21,3 +21,11 @@ bip39.mnemonicToSeed('basket actual') // wait for it...
 bip39.generateMnemonic() // strength defaults to 128 bits
 // 'seed sock milk update focus rotate barely fade car face mechanic mercy'
 ```
+### Browser
+
+Compile `bip39.js` with the following command:
+
+    $ npm run compile
+
+After loading this file in your browser, you will be able to use the global `BIP39` object.
+
