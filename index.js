@@ -58,8 +58,8 @@ BIP39.prototype.validate = function(mnemonic) {
 
   // split the binary string into ENT/CS
   var dividerIndex = Math.floor(bits.length / 33) * 32
-  var entropy = bits.substring(0, dividerIndex)
-  var checksum = bits.substring(dividerIndex)
+  var entropy = bits.slice(0, dividerIndex)
+  var checksum = bits.slice(dividerIndex)
 
   // calculate the checksum and compare
   var entropyBytes = entropy.match(/(.{1,8})/g).map(function(bin) {
@@ -78,7 +78,7 @@ function checksumBits(entropyBuffer) {
   var ENT = entropyBuffer.length * 8
   var CS = ENT / 32
 
-  return bytesToBinary([].slice.call(hash)).substr(0, CS)
+  return bytesToBinary([].slice.call(hash)).slice(0, CS)
 }
 
 function salt(password) {
