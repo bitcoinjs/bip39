@@ -4,8 +4,6 @@ var includeFolder = require('include-folder')
 var Wordlists = includeFolder(path.join(__dirname, 'wordlists'))
 var crypto = require('crypto')
 
-module.exports = BIP39
-
 function BIP39(language) {
   language = language || 'en'
   this.wordlist = JSON.parse(Wordlists[language])
@@ -90,3 +88,4 @@ function lpad(str, padString, length) {
   return str;
 }
 
+module.exports = BIP39
