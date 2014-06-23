@@ -37,20 +37,19 @@ BIP39.prototype.generateMnemonic = function(strength) {
 }
 
 BIP39.prototype.validate = function(mnemonic) {
-  mnemonic = mnemonic.split(' ')
+  var words = mnemonic.split(' ')
 
-  if (mnemonic.length % 3 !== 0) return false
+  if (words.length % 3 !== 0) return false
 
   var wordlist = this.wordlist
-
-  var belongToList = mnemonic.every(function(word) {
+  var belongToList = words.every(function(word) {
     return wordlist.indexOf(word) > -1
   })
 
   if (!belongToList) return false
 
-  var bits = mnemonic.map(function(m) {
-    var id = wordlist.indexOf(m)
+  var bits = words.map(function(word) {
+    var id = wordlist.indexOf(word)
     return lpad(id.toString(2), '0', 11)
   }).join('')
 
