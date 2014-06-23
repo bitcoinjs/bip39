@@ -1,6 +1,6 @@
 var vectors = require('./vectors.json').english
 var BIP39 = require('../index.js')
-var wordlist = require('../Wordlists/en.json')
+var wordlist = require('../wordlists/en.json')
 var assert = require('assert')
 
 var bip39 = new BIP39()
