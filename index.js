@@ -41,9 +41,10 @@ BIP39.prototype.validate = function(mnemonic) {
   if (mnemonic.length % 3 !== 0) return false
 
   var wordlist = this.wordlist
-  var belongToList = mnemonic.reduce(function(memo, m) {
-    return memo && (wordlist.indexOf(m) > -1)
-  }, true)
+
+  var belongToList = mnemonic.every(function(word) {
+    return wordlist.indexOf(word) > -1
+  })
 
   if (!belongToList) return false
 
