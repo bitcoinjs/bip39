@@ -17,17 +17,19 @@ BIP39.prototype.mnemonicToSeed = function(mnemonic, password) {
 
 BIP39.prototype.entropyToMnemonic = function(entropy) {
   var entropyBuffer = new Buffer(entropy, 'hex')
-  var hash = crypto.createHash('sha256').update(entropyBuffer).digest()
+  var entropyBits = bytesToBinary([].slice.call(entropyBuffer))
+  var checksum = checksumBits(entropyBuffer)
 
-  var combined = Buffer.concat([entropyBuffer, hash])
-  var bitLength = entropyBuffer.length * 8 + entropyBuffer.length / 4
-  var bits = bytesToBinary([].slice.call(combined)).substr(0, bitLength)
+  var bits = entropyBits + checksum
+  var chunks = bits.match(/(.{1,11})/g)
 
-  var chunks = (bits).match(/(.{1,11})/g)
-  return chunks.map(function(binary) {
+  var words = chunks.map(function(binary) {
     var index = parseInt(binary, 2)
+
     return this.wordlist[index]
-  }, this).join(' ')
+  }, this)
+
+  return words.join(' ')
 }
 
 BIP39.prototype.generateMnemonic = function(strength) {
@@ -48,24 +50,35 @@ BIP39.prototype.validate = function(mnemonic) {
 
   if (!belongToList) return false
 
+  // convert word indices to 11 bit binary strings
   var bits = words.map(function(word) {
-    var id = wordlist.indexOf(word)
-    return lpad(id.toString(2), '0', 11)
+    var index = wordlist.indexOf(word)
+    return lpad(index.toString(2), '0', 11)
   }).join('')
 
-  var length = bits.length
-  var dividerIndex = Math.floor(length / 33) * 32
+  // split the binary string into ENT/CS
+  var dividerIndex = Math.floor(bits.length / 33) * 32
+  var entropy = bits.substring(0, dividerIndex)
   var checksum = bits.substring(dividerIndex)
 
-  var data = bits.substring(0, dividerIndex)
-  var bytes = data.match(/(.{1,8})/g).map(function(bin) {
+  // calculate the checksum and compare
+  var entropyBytes = entropy.match(/(.{1,8})/g).map(function(bin) {
     return parseInt(bin, 2)
   })
-  var hash = crypto.createHash('sha256').update(new Buffer(bytes)).digest()
-  var checksumBits = bytesToBinary([].slice.call(hash))
-  var checksum2 = checksumBits.substr(0, length - dividerIndex)
+  var entropyBuffer = new Buffer(entropyBytes)
+  var newChecksum = checksumBits(entropyBuffer)
 
-  return checksum === checksum2
+  return newChecksum === checksum
+}
+
+function checksumBits(entropyBuffer) {
+  var hash = crypto.createHash('sha256').update(entropyBuffer).digest()
+
+  // Calculated constants from BIP39
+  var ENT = entropyBuffer.length * 8
+  var CS = ENT / 32
+
+  return bytesToBinary([].slice.call(hash)).substr(0, CS)
 }
 
 function salt(password) {
