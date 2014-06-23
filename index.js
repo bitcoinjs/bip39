@@ -1,12 +1,13 @@
 var CryptoJS = require('crypto-js')
-var path = require('path')
-var includeFolder = require('include-folder')
-var Wordlists = includeFolder(path.join(__dirname, 'wordlists'))
 var crypto = require('crypto')
+
+var includeFolder = require('include-folder')
+var path = require('path')
+var wordlists = includeFolder(path.join(__dirname, 'wordlists'))
 
 function BIP39(language) {
   language = language || 'en'
-  this.wordlist = JSON.parse(Wordlists[language])
+  this.wordlist = JSON.parse(wordlists[language])
 }
 
 BIP39.prototype.mnemonicToSeed = function(mnemonic, password) {

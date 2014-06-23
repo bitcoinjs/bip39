@@ -1,8 +1,8 @@
-var vectors = require('./vectors.json').english
-var BIP39 = require('../index.js')
-var wordlist = require('../wordlists/en.json')
 var assert = require('assert')
+var wordlist = require('../wordlists/en.json')
+var vectors = require('./vectors.json').english
 
+var BIP39 = require('../index.js')
 var bip39 = new BIP39()
 
 describe('constructor', function(){
