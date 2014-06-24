@@ -1,79 +1,91 @@
 var CryptoJS = require('crypto-js')
-var path = require('path')
-var includeFolder = require('include-folder')
-var Wordlists = includeFolder(path.join(__dirname, 'wordlists'))
 var crypto = require('crypto')
 
-module.exports = BIP39
+var includeFolder = require('include-folder')
+var path = require('path')
+var wordlists = includeFolder(path.join(__dirname, 'wordlists'))
 
-function BIP39(language){
+function BIP39(language) {
   language = language || 'en'
-  this.wordlist = JSON.parse(Wordlists[language])
+  this.wordlist = JSON.parse(wordlists[language])
 }
 
-BIP39.prototype.mnemonicToSeed = function(mnemonic, password){
+BIP39.prototype.mnemonicToSeed = function(mnemonic, password) {
   var options = {iterations: 2048, hasher: CryptoJS.algo.SHA512, keySize: 512/32}
   return CryptoJS.PBKDF2(mnemonic, salt(password), options).toString(CryptoJS.enc.Hex)
 }
 
-BIP39.prototype.entropyToMnemonic = function(entropy){
+BIP39.prototype.entropyToMnemonic = function(entropy) {
   var entropyBuffer = new Buffer(entropy, 'hex')
-  var hash = crypto.createHash('sha256').update(entropyBuffer).digest()
+  var entropyBits = bytesToBinary([].slice.call(entropyBuffer))
+  var checksum = checksumBits(entropyBuffer)
 
-  var combined = Buffer.concat([entropyBuffer, hash])
-  var bitLength = entropyBuffer.length * 8 + entropyBuffer.length / 4
-  var bits = bytesToBinary([].slice.call(combined)).substr(0, bitLength)
+  var bits = entropyBits + checksum
+  var chunks = bits.match(/(.{1,11})/g)
 
-  var chunks = (bits).match(/(.{1,11})/g)
-  return chunks.map(function(binary){
+  var words = chunks.map(function(binary) {
     var index = parseInt(binary, 2)
+
     return this.wordlist[index]
-  }, this).join(' ')
+  }, this)
+
+  return words.join(' ')
 }
 
-BIP39.prototype.generateMnemonic = function(strength){
+BIP39.prototype.generateMnemonic = function(strength) {
   strength = strength || 128
   var entropy = crypto.randomBytes(strength/8).toString('hex')
   return this.entropyToMnemonic(entropy)
 }
 
-BIP39.prototype.validate = function(mnemonic){
-  mnemonic = mnemonic.split(' ')
+BIP39.prototype.validate = function(mnemonic) {
+  var words = mnemonic.split(' ')
 
-  if(mnemonic.length % 3 !== 0) return false
+  if (words.length % 3 !== 0) return false
 
   var wordlist = this.wordlist
-  var belongToList = mnemonic.reduce(function(memo, m){
-    return memo && (wordlist.indexOf(m) > -1)
-  }, true)
+  var belongToList = words.every(function(word) {
+    return wordlist.indexOf(word) > -1
+  })
 
-  if(!belongToList) return false
+  if (!belongToList) return false
 
-  var bits = mnemonic.map(function(m){
-    var id = wordlist.indexOf(m)
-    return lpad(id.toString(2), '0', 11)
+  // convert word indices to 11 bit binary strings
+  var bits = words.map(function(word) {
+    var index = wordlist.indexOf(word)
+    return lpad(index.toString(2), '0', 11)
   }).join('')
 
-  var length = bits.length
-  var dividerIndex = Math.floor(length / 33) * 32
-  var checksum = bits.substring(dividerIndex)
+  // split the binary string into ENT/CS
+  var dividerIndex = Math.floor(bits.length / 33) * 32
+  var entropy = bits.slice(0, dividerIndex)
+  var checksum = bits.slice(dividerIndex)
 
-  var data = bits.substring(0, dividerIndex)
-  var bytes = data.match(/(.{1,8})/g).map(function(bin){
+  // calculate the checksum and compare
+  var entropyBytes = entropy.match(/(.{1,8})/g).map(function(bin) {
     return parseInt(bin, 2)
   })
-  var hash = crypto.createHash('sha256').update(new Buffer(bytes)).digest()
-  var checksumBits = bytesToBinary([].slice.call(hash))
-  var checksum2 = checksumBits.substr(0, length - dividerIndex)
+  var entropyBuffer = new Buffer(entropyBytes)
+  var newChecksum = checksumBits(entropyBuffer)
 
-  return checksum === checksum2
+  return newChecksum === checksum
+}
+
+function checksumBits(entropyBuffer) {
+  var hash = crypto.createHash('sha256').update(entropyBuffer).digest()
+
+  // Calculated constants from BIP39
+  var ENT = entropyBuffer.length * 8
+  var CS = ENT / 32
+
+  return bytesToBinary([].slice.call(hash)).slice(0, CS)
 }
 
 function salt(password) {
   return encode_utf8('mnemonic' + (password || ''))
 }
 
-function encode_utf8(s){
+function encode_utf8(s) {
   return unescape(encodeURIComponent(s))
 }
 
@@ -90,3 +102,4 @@ function lpad(str, padString, length) {
   return str;
 }
 
+module.exports = BIP39
