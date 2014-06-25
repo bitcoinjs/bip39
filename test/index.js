@@ -36,12 +36,10 @@ describe('generateMnemonic', function() {
   })
 
   it('allows a custom RNG to be used', function() {
-    var rng = {
-      randomBuffer: function(size) {
-        var buffer = new Buffer(size)
-        buffer.fill(4) // guaranteed random
-        return buffer
-      }
+    var rng = function(size) {
+      var buffer = new Buffer(size)
+      buffer.fill(4) // guaranteed random
+      return buffer
     }
 
     var mnemonic = bip39.generateMnemonic(64, rng)

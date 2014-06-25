@@ -35,9 +35,9 @@ BIP39.prototype.entropyToMnemonic = function(entropy) {
 
 BIP39.prototype.generateMnemonic = function(strength, rng) {
   strength = strength || 128
-  rng = rng || secureRandom
+  rng = rng || secureRandom.randomBuffer
 
-  var hex = rng.randomBuffer(strength / 8).toString('hex')
+  var hex = rng(strength / 8).toString('hex')
   return this.entropyToMnemonic(hex)
 }
 
