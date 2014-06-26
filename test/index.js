@@ -27,6 +27,26 @@ describe('entropyToMnemonic', function() {
   })
 })
 
+describe('generateMnemonic', function() {
+  it('generates a mnemonic', function() {
+    var mnemonic = bip39.generateMnemonic(96)
+    var words = mnemonic.split(' ')
+
+    assert.equal(words.length, 9)
+  })
+
+  it('allows a custom RNG to be used', function() {
+    var rng = function(size) {
+      var buffer = new Buffer(size)
+      buffer.fill(4) // guaranteed random
+      return buffer
+    }
+
+    var mnemonic = bip39.generateMnemonic(64, rng)
+    assert.equal(mnemonic, 'advice cage absurd amount doctor act')
+  })
+})
+
 describe('validate', function() {
   vectors.forEach(function(v, i) {
     it('passes check ' + i, function() {

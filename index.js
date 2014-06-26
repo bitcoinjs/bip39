@@ -1,5 +1,6 @@
 var CryptoJS = require('crypto-js')
 var crypto = require('crypto')
+var secureRandom = require('secure-random')
 
 var includeFolder = require('include-folder')
 var path = require('path')
@@ -32,10 +33,12 @@ BIP39.prototype.entropyToMnemonic = function(entropy) {
   return words.join(' ')
 }
 
-BIP39.prototype.generateMnemonic = function(strength) {
+BIP39.prototype.generateMnemonic = function(strength, rng) {
   strength = strength || 128
-  var entropy = crypto.randomBytes(strength/8).toString('hex')
-  return this.entropyToMnemonic(entropy)
+  rng = rng || secureRandom.randomBuffer
+
+  var hex = rng(strength / 8).toString('hex')
+  return this.entropyToMnemonic(hex)
 }
 
 BIP39.prototype.validate = function(mnemonic) {
