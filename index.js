@@ -35,7 +35,7 @@ BIP39.prototype.generateMnemonic = function(strength, rng) {
   rng = rng || secureRandom.randomBuffer
 
   var hex = rng(strength / 8).toString('hex')
-  return this.entropyToMnemonic(hex, this.wordlist)
+  return this.entropyToMnemonic(hex)
 }
 
 BIP39.prototype.validate = function(mnemonic) {
