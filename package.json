@@ -15,18 +15,10 @@
   "license": "ISC",
   "dependencies": {
     "crypto-js": "^3.1.2-2",
-    "require-json-tree": "~1.1.0",
-    "include-folder": "~0.7.0",
     "secure-random": "1.0.0"
   },
   "devDependencies": {
     "browserify": "^5.9.1",
-    "folderify": "~0.6.0",
     "mocha": "^1.17.1"
-  },
-  "browserify": {
-    "transform": [
-      "folderify"
-    ]
   }
 }

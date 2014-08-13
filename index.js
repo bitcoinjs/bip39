@@ -2,13 +2,10 @@ var CryptoJS = require('crypto-js')
 var crypto = require('crypto')
 var secureRandom = require('secure-random')
 
-var includeFolder = require('include-folder')
-var path = require('path')
-var wordlists = includeFolder(path.join(__dirname, 'wordlists'))
+var DEFAULT_WORDLIST = require('./wordlists/en.json')
 
-function BIP39(language) {
-  language = language || 'en'
-  this.wordlist = JSON.parse(wordlists[language])
+function BIP39(wordlist) {
+  this.wordlist = wordlist || DEFAULT_WORDLIST
 }
 
 BIP39.prototype.mnemonicToSeed = function(mnemonic, password) {
@@ -38,7 +35,7 @@ BIP39.prototype.generateMnemonic = function(strength, rng) {
   rng = rng || secureRandom.randomBuffer
 
   var hex = rng(strength / 8).toString('hex')
-  return this.entropyToMnemonic(hex)
+  return this.entropyToMnemonic(hex, this.wordlist)
 }
 
 BIP39.prototype.validate = function(mnemonic) {
