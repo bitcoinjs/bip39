@@ -19,6 +19,20 @@ describe('BIP39', function() {
     })
   })
 
+  describe('mnemonicToEntropy', function() {
+    vectors.english.forEach(function(v, i) {
+      it('works for tests vector ' + i, function() {
+        assert.equal(BIP39.mnemonicToEntropy(v[1]), v[0])
+      })
+    })
+
+    vectors.custom.forEach(function(v, i) {
+      it('works for custom test vector ' + i, function() {
+        assert.equal(BIP39.mnemonicToEntropy(v[1], wordlists.custom), v[0])
+      })
+    })
+  })
+
   describe('entropyToMnemonic', function() {
     vectors.english.forEach(function(v, i) {
       it('works for tests vector ' + i, function() {
