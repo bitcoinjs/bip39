@@ -4,7 +4,7 @@ var secureRandom = require('secure-random')
 
 var DEFAULT_WORDLIST = require('./wordlists/en.json')
 
-function mnemonicToSeed(mnemonic, password) {
+function mnemonicToSeedHex(mnemonic, password) {
   var options = { iterations: 2048, hasher: CryptoJS.algo.SHA512, keySize: 512/32 }
   return CryptoJS.PBKDF2(mnemonic, salt(password), options).toString(CryptoJS.enc.Hex)
 }
@@ -102,7 +102,7 @@ function lpad(str, padString, length) {
 }
 
 module.exports = {
-  mnemonicToSeed: mnemonicToSeed,
+  mnemonicToSeedHex: mnemonicToSeedHex,
   entropyToMnemonic: entropyToMnemonic,
   generateMnemonic: generateMnemonic,
   validateMnemonic: validateMnemonic

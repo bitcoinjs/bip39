@@ -9,12 +9,12 @@ var wordlists = {
 var vectors = require('./vectors.json')
 
 describe('BIP39', function() {
-  describe('mnemonicToSeed', function() {
+  describe('mnemonicToSeedHex', function() {
     this.timeout(20000)
 
     vectors.english.forEach(function(v, i) {
       it('works for tests vector ' + i, function() {
-        assert.equal(BIP39.mnemonicToSeed(v[1], 'TREZOR'), v[2])
+        assert.equal(BIP39.mnemonicToSeedHex(v[1], 'TREZOR'), v[2])
       })
     })
   })
