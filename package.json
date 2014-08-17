@@ -8,6 +8,13 @@
     "compile": "browserify index.js -s BIP39 > bip39.js"
   },
   "author": "Wei Lu",
+  "contributors": [
+    {
+      "name": "Daniel Cousens",
+      "email": "email@dcousens.com",
+      "url": "http://dcousens.com"
+    }
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/weilu/bip39.git"
