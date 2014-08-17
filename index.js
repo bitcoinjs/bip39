@@ -38,7 +38,7 @@ BIP39.prototype.generateMnemonic = function(strength, rng) {
   return this.entropyToMnemonic(hex)
 }
 
-BIP39.prototype.validate = function(mnemonic) {
+BIP39.prototype.validateMnemonic = function(mnemonic) {
   var words = mnemonic.split(' ')
 
   if (words.length % 3 !== 0) return false
