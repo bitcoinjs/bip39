@@ -4,16 +4,14 @@ var secureRandom = require('secure-random')
 
 var DEFAULT_WORDLIST = require('./wordlists/en.json')
 
-function BIP39(wordlist) {
-  this.wordlist = wordlist || DEFAULT_WORDLIST
-}
-
-BIP39.prototype.mnemonicToSeed = function(mnemonic, password) {
-  var options = {iterations: 2048, hasher: CryptoJS.algo.SHA512, keySize: 512/32}
+function mnemonicToSeed(mnemonic, password) {
+  var options = { iterations: 2048, hasher: CryptoJS.algo.SHA512, keySize: 512/32 }
   return CryptoJS.PBKDF2(mnemonic, salt(password), options).toString(CryptoJS.enc.Hex)
 }
 
-BIP39.prototype.entropyToMnemonic = function(entropy) {
+function entropyToMnemonic(entropy, wordlist) {
+  wordlist = wordlist || DEFAULT_WORDLIST
+
   var entropyBuffer = new Buffer(entropy, 'hex')
   var entropyBits = bytesToBinary([].slice.call(entropyBuffer))
   var checksum = checksumBits(entropyBuffer)
@@ -24,26 +22,27 @@ BIP39.prototype.entropyToMnemonic = function(entropy) {
   var words = chunks.map(function(binary) {
     var index = parseInt(binary, 2)
 
-    return this.wordlist[index]
-  }, this)
+    return wordlist[index]
+  })
 
   return words.join(' ')
 }
 
-BIP39.prototype.generateMnemonic = function(strength, rng) {
+function generateMnemonic(strength, rng, wordlist) {
   strength = strength || 128
   rng = rng || secureRandom.randomBuffer
 
   var hex = rng(strength / 8).toString('hex')
-  return this.entropyToMnemonic(hex)
+  return entropyToMnemonic(hex, wordlist)
 }
 
-BIP39.prototype.validateMnemonic = function(mnemonic) {
+function validateMnemonic(mnemonic, wordlist) {
+  wordlist = wordlist || DEFAULT_WORDLIST
+
   var words = mnemonic.split(' ')
 
   if (words.length % 3 !== 0) return false
 
-  var wordlist = this.wordlist
   var belongToList = words.every(function(word) {
     return wordlist.indexOf(word) > -1
   })
@@ -102,4 +101,9 @@ function lpad(str, padString, length) {
   return str;
 }
 
-module.exports = BIP39
+module.exports = {
+  mnemonicToSeed: mnemonicToSeed,
+  entropyToMnemonic: entropyToMnemonic,
+  generateMnemonic: generateMnemonic,
+  validateMnemonic: validateMnemonic
+}
