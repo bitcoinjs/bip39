@@ -1,3 +1,4 @@
+var assert = require('assert')
 var CryptoJS = require('crypto-js')
 var crypto = require('crypto')
 var secureRandom = require('secure-random')
@@ -7,6 +8,41 @@ var DEFAULT_WORDLIST = require('./wordlists/en.json')
 function mnemonicToSeedHex(mnemonic, password) {
   var options = { iterations: 2048, hasher: CryptoJS.algo.SHA512, keySize: 512/32 }
   return CryptoJS.PBKDF2(mnemonic, salt(password), options).toString(CryptoJS.enc.Hex)
+}
+
+function mnemonicToEntropy(mnemonic, wordlist) {
+  wordlist = wordlist || DEFAULT_WORDLIST
+
+  var words = mnemonic.split(' ')
+  assert(words.length % 3 === 0, 'Invalid mnemonic')
+
+  var belongToList = words.every(function(word) {
+    return wordlist.indexOf(word) > -1
+  })
+
+  assert(belongToList, 'Invalid mnemonic')
+
+  // convert word indices to 11 bit binary strings
+  var bits = words.map(function(word) {
+    var index = wordlist.indexOf(word)
+    return lpad(index.toString(2), '0', 11)
+  }).join('')
+
+  // split the binary string into ENT/CS
+  var dividerIndex = Math.floor(bits.length / 33) * 32
+  var entropy = bits.slice(0, dividerIndex)
+  var checksum = bits.slice(dividerIndex)
+
+  // calculate the checksum and compare
+  var entropyBytes = entropy.match(/(.{1,8})/g).map(function(bin) {
+    return parseInt(bin, 2)
+  })
+  var entropyBuffer = new Buffer(entropyBytes)
+  var newChecksum = checksumBits(entropyBuffer)
+
+  assert(newChecksum === checksum, 'Invalid mnemonic checksum')
+
+  return entropyBuffer.toString('hex')
 }
 
 function entropyToMnemonic(entropy, wordlist) {
@@ -37,37 +73,13 @@ function generateMnemonic(strength, rng, wordlist) {
 }
 
 function validateMnemonic(mnemonic, wordlist) {
-  wordlist = wordlist || DEFAULT_WORDLIST
+  try {
+    mnemonicToEntropy(mnemonic, wordlist)
+  } catch (e) {
+    return false
+  }
 
-  var words = mnemonic.split(' ')
-
-  if (words.length % 3 !== 0) return false
-
-  var belongToList = words.every(function(word) {
-    return wordlist.indexOf(word) > -1
-  })
-
-  if (!belongToList) return false
-
-  // convert word indices to 11 bit binary strings
-  var bits = words.map(function(word) {
-    var index = wordlist.indexOf(word)
-    return lpad(index.toString(2), '0', 11)
-  }).join('')
-
-  // split the binary string into ENT/CS
-  var dividerIndex = Math.floor(bits.length / 33) * 32
-  var entropy = bits.slice(0, dividerIndex)
-  var checksum = bits.slice(dividerIndex)
-
-  // calculate the checksum and compare
-  var entropyBytes = entropy.match(/(.{1,8})/g).map(function(bin) {
-    return parseInt(bin, 2)
-  })
-  var entropyBuffer = new Buffer(entropyBytes)
-  var newChecksum = checksumBits(entropyBuffer)
-
-  return newChecksum === checksum
+  return true
 }
 
 function checksumBits(entropyBuffer) {
@@ -103,6 +115,7 @@ function lpad(str, padString, length) {
 
 module.exports = {
   mnemonicToSeedHex: mnemonicToSeedHex,
+  mnemonicToEntropy: mnemonicToEntropy,
   entropyToMnemonic: entropyToMnemonic,
   generateMnemonic: generateMnemonic,
   validateMnemonic: validateMnemonic
