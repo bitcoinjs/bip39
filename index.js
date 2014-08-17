@@ -1,7 +1,6 @@
 var assert = require('assert')
 var CryptoJS = require('crypto-js')
 var crypto = require('crypto')
-var secureRandom = require('secure-random')
 
 var DEFAULT_WORDLIST = require('./wordlists/en.json')
 
@@ -66,7 +65,7 @@ function entropyToMnemonic(entropy, wordlist) {
 
 function generateMnemonic(strength, rng, wordlist) {
   strength = strength || 128
-  rng = rng || secureRandom.randomBuffer
+  rng = rng || crypto.randomBytes
 
   var hex = rng(strength / 8).toString('hex')
   return entropyToMnemonic(hex, wordlist)
