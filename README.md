@@ -8,7 +8,7 @@ JavaScript implementation of [Bitcoin BIP39](https://github.com/bitcoin/bips/blo
 `npm install bip39`
 
 ```javascript
-var BIP39 = require('BIP39')
+var BIP39 = require('bip39')
 
 var mnemonic = BIP39.entropyToMnemonic('1337') // hex input, defaults to BIP39 English word list
 // 'basket actual'
