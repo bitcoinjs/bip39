@@ -1,12 +1,15 @@
 var assert = require('assert')
-var CryptoJS = require('crypto-js')
 var crypto = require('crypto')
+var pbkdf2 = require('pbkdf2-compat')
 
 var DEFAULT_WORDLIST = require('./wordlists/en.json')
 
+function mnemonicToSeed(mnemonic, password) {
+  return pbkdf2(mnemonic, salt(password), 2048, 64, 'sha512')
+}
+
 function mnemonicToSeedHex(mnemonic, password) {
-  var options = { iterations: 2048, hasher: CryptoJS.algo.SHA512, keySize: 512/32 }
-  return CryptoJS.PBKDF2(mnemonic, salt(password), options).toString(CryptoJS.enc.Hex)
+  return mnemonicToSeed(mnemonic, password).toString('hex')
 }
 
 function mnemonicToEntropy(mnemonic, wordlist) {
@@ -113,6 +116,7 @@ function lpad(str, padString, length) {
 }
 
 module.exports = {
+  mnemonicToSeed: mnemonicToSeed,
   mnemonicToSeedHex: mnemonicToSeedHex,
   mnemonicToEntropy: mnemonicToEntropy,
   entropyToMnemonic: entropyToMnemonic,
