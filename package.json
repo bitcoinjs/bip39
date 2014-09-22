@@ -21,7 +21,8 @@
   },
   "license": "ISC",
   "dependencies": {
-    "crypto-js": "^3.1.2-2"
+    "crypto-js": "^3.1.2-2",
+    "sinon": "^1.10.3"
   },
   "devDependencies": {
     "browserify": "^5.9.1",
