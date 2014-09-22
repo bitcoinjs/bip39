@@ -21,11 +21,11 @@
   },
   "license": "ISC",
   "dependencies": {
-    "crypto-js": "^3.1.2-2",
-    "sinon": "^1.10.3"
+    "pbkdf2-compat": "^1.0.1"
   },
   "devDependencies": {
     "browserify": "^5.9.1",
-    "mocha": "^1.17.1"
+    "mocha": "^1.17.1",
+    "sinon": "^1.10.3"
   }
 }
