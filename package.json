@@ -21,7 +21,7 @@
   },
   "license": "ISC",
   "dependencies": {
-    "pbkdf2-compat": "^1.0.1"
+    "pbkdf2-compat": "2.0.0"
   },
   "devDependencies": {
     "browserify": "^5.9.1",
