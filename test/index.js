@@ -120,4 +120,13 @@ describe('BIP39', function() {
       assert(!BIP39.validateMnemonic('sleep kitten sleep kitten sleep kitten sleep kitten sleep kitten sleep kitten'))
     })
   })
+
+  describe('utf8 passwords', function() {
+      it ('creates the correct seed', function() {
+          var mnemonic = "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about"
+          var utf8_password = "㍍ガバヴァぱばぐゞちぢ十人十色"
+          var seed = "ba553eedefe76e67e2602dc20184c564010859faada929a090dd2c57aacb204ceefd15404ab50ef3e8dbeae5195aeae64b0def4d2eead1cdc728a33ced520ffd"
+          assert.equal(BIP39.mnemonicToSeedHex(mnemonic, utf8_password), seed)
+      })
+  })
 })
