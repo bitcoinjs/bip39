@@ -95,12 +95,19 @@ function checksumBits(entropyBuffer) {
 }
 
 function salt(password) {
-  return encode_utf8('mnemonic' + (password || ''))
+  return 'mnemonic' + (normalizeString(password) || '')
 }
 
-function encode_utf8(s) {
-  return unescape(encodeURIComponent(s))
-}
+function normalizeString(str) {
+        if (typeof str.normalize == "function") {
+            return str.normalize("NFKD");
+        }
+        else {
+            // decide how to handle this in the future.
+            // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/normalize
+            return str;
+        }
+    }
 
 //=========== helper methods from bitcoinjs-lib ========
 
