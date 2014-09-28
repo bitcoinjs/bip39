@@ -127,6 +127,11 @@ describe('BIP39', function() {
         var utf8_password = "㍍ガバヴァぱばぐゞちぢ十人十色"
         assert.equal(BIP39.mnemonicToSeedHex(v[1], utf8_password), v[2])
       })
+
+      it ('works with already normalized password', function() {
+        var normalized_password = "メートルガバヴァぱばぐゞちぢ十人十色"
+        assert.equal(BIP39.mnemonicToSeedHex(v[1], normalized_password), v[2])
+      })
     })
   })
 })
