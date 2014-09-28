@@ -1,6 +1,7 @@
 var assert = require('assert')
 var crypto = require('crypto')
 var pbkdf2 = require('pbkdf2-compat').pbkdf2Sync
+var unorm = require('unorm')
 
 var DEFAULT_WORDLIST = require('./wordlists/en.json')
 
@@ -95,19 +96,8 @@ function checksumBits(entropyBuffer) {
 }
 
 function salt(password) {
-  return 'mnemonic' + (normalizeString(password) || '')
+  return 'mnemonic' + (unorm.nfkd(password) || '') // Use unorm until String.prototype.normalize gets better browser support
 }
-
-function normalizeString(str) {
-        if (typeof str.normalize == "function") {
-            return str.normalize("NFKD");
-        }
-        else {
-            // decide how to handle this in the future.
-            // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/normalize
-            return str;
-        }
-    }
 
 //=========== helper methods from bitcoinjs-lib ========
 

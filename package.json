@@ -21,7 +21,8 @@
   },
   "license": "ISC",
   "dependencies": {
-    "pbkdf2-compat": "2.0.1"
+    "pbkdf2-compat": "2.0.1",
+    "unorm": "^1.3.3"
   },
   "browser": {
     "crypto": "crypto-browserify"
