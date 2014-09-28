@@ -24,12 +24,8 @@
     "pbkdf2-compat": "2.0.1",
     "unorm": "^1.3.3"
   },
-  "browser": {
-    "crypto": "crypto-browserify"
-  },
   "devDependencies": {
     "browserify": "^5.12.0",
-    "crypto-browserify": "3.2.4",
     "mocha": "^1.17.1",
     "sinon": "^1.10.3"
   },
