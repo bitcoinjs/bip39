@@ -1,6 +1,6 @@
 var assert = require('assert')
 var crypto = require('crypto')
-var pbkdf2 = require('pbkdf2-compat').pbkdf2Sync
+var pbkdf2 = crypto.pbkdf2Sync
 var unorm = require('unorm')
 
 var DEFAULT_WORDLIST = require('./wordlists/en.json')
