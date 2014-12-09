@@ -12,11 +12,12 @@ JavaScript implementation of [Bitcoin BIP39](https://github.com/bitcoin/bips/blo
 ```javascript
 var bip39 = require('bip39')
 
-var mnemonic = bip39.entropyToMnemonic('1337') // hex input, defaults to BIP39 English word list
-// 'basket actual'
+var mnemonic = bip39.entropyToMnemonic('133755ff') // hex input, defaults to BIP39 English word list
+// 'basket rival lemon'
+
 
 bip39.mnemonicToEntropy(mnemonic) // hex input, defaults to BIP39 English word list
-// '1337'
+// '133755ff'
 
 // Generate a random mnemonic using crypto.randomBytes
 mnemonic = bip39.generateMnemonic() // strength defaults to 128 bits
