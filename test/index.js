@@ -122,15 +122,15 @@ describe('BIP39', function() {
   })
 
   describe('utf8 passwords', function() {
-    vectors.japanese.forEach(function(v, i) {
+    vectors.japanese.forEach(function(v) {
       it ('creates the correct seed', function() {
-        var utf8_password = "㍍ガバヴァぱばぐゞちぢ十人十色"
-        assert.equal(BIP39.mnemonicToSeedHex(v[1], utf8_password), v[2])
+        var utf8Password = "㍍ガバヴァぱばぐゞちぢ十人十色"
+        assert.equal(BIP39.mnemonicToSeedHex(v[1], utf8Password), v[2])
       })
 
       it ('works with already normalized password', function() {
-        var normalized_password = "メートルガバヴァぱばぐゞちぢ十人十色"
-        assert.equal(BIP39.mnemonicToSeedHex(v[1], normalized_password), v[2])
+        var normalizedPassword = "メートルガバヴァぱばぐゞちぢ十人十色"
+        assert.equal(BIP39.mnemonicToSeedHex(v[1], normalizedPassword), v[2])
       })
     })
   })
