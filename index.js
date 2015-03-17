@@ -1,6 +1,7 @@
 var assert = require('assert')
 var crypto = require('crypto')
 var pbkdf2 = require('pbkdf2-compat').pbkdf2Sync
+var randomBytes = require('randombytes')
 var unorm = require('unorm')
 
 var DEFAULT_WORDLIST = require('./wordlists/en.json')
@@ -69,7 +70,7 @@ function entropyToMnemonic(entropy, wordlist) {
 
 function generateMnemonic(strength, rng, wordlist) {
   strength = strength || 128
-  rng = rng || crypto.randomBytes
+  rng = rng || randomBytes
 
   var hex = rng(strength / 8).toString('hex')
   return entropyToMnemonic(hex, wordlist)

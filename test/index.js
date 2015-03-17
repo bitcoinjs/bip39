@@ -1,7 +1,5 @@
 var assert = require('assert')
-var crypto = require('crypto')
 var BIP39 = require('../index.js')
-var sinon = require('sinon')
 
 var wordlists = {
   english: require('../wordlists/en.json'),
@@ -51,13 +49,11 @@ describe('BIP39', function() {
 
   describe('generateMnemonic', function() {
     vectors.english.forEach(function(v, i) {
-      it('works for tests vector ' + i, sinon.test(function() {
-        this.mock(crypto).expects('randomBytes')
-          .exactly(1)
-          .onCall(0).returns(new Buffer(v[0], 'hex'))
+      it('works for tests vector ' + i, function() {
+        function rng() { return new Buffer(v[0], 'hex') }
 
-        assert.equal(BIP39.generateMnemonic(), v[1])
-      }))
+        assert.equal(BIP39.generateMnemonic(undefined, rng), v[1])
+      })
     })
 
     it('can vary generated entropy bit length', function() {
