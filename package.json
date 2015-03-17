@@ -28,18 +28,5 @@
     "browserify": "^8.0.3",
     "mocha": "^2.1.0",
     "sinon": "^1.12.2"
-  },
-  "testling": {
-    "browsers": [
-      "android-browser/4.2..latest",
-      "chrome/20..latest",
-      "firefox/21..latest",
-      "ipad/6..latest",
-      "iphone/6..latest",
-      "opera/15..latest",
-      "safari/latest"
-    ],
-    "harness": "mocha-bdd",
-    "files": "test/*.js"
   }
 }
