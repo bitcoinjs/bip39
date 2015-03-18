@@ -28,7 +28,6 @@
   },
   "devDependencies": {
     "browserify": "^9.0.0",
-    "mocha": "^2.2.0",
-    "sinon": "^1.12.2"
+    "mocha": "^2.2.0"
   }
 }
