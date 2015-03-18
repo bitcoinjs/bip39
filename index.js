@@ -1,6 +1,6 @@
 var assert = require('assert')
-var crypto = require('crypto')
-var pbkdf2 = require('pbkdf2-compat').pbkdf2Sync
+var createHash = require('create-hash')
+var pbkdf2 = require('pbkdf2').pbkdf2Sync
 var randomBytes = require('randombytes')
 var unorm = require('unorm')
 
@@ -87,7 +87,7 @@ function validateMnemonic(mnemonic, wordlist) {
 }
 
 function checksumBits(entropyBuffer) {
-  var hash = crypto.createHash('sha256').update(entropyBuffer).digest()
+  var hash = createHash('sha256').update(entropyBuffer).digest()
 
   // Calculated constants from BIP39
   var ENT = entropyBuffer.length * 8
