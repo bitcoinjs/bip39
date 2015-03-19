@@ -6,11 +6,11 @@ var unorm = require('unorm')
 var DEFAULT_WORDLIST = require('./wordlists/en.json')
 
 function mnemonicToSeed(mnemonic, password) {
-  return pbkdf2(mnemonic, salt(password), 2048, 64, 'sha512')
+  return mnemonicToSeedBuffer(mnemonic, password).toString('hex')
 }
 
-function mnemonicToSeedHex(mnemonic, password) {
-  return mnemonicToSeed(mnemonic, password).toString('hex')
+function mnemonicToSeedBuffer(mnemonic, password) {
+  return pbkdf2(mnemonic, salt(password), 2048, 64, 'sha512')
 }
 
 function mnemonicToEntropy(mnemonic, wordlist) {
@@ -114,7 +114,7 @@ function lpad(str, padString, length) {
 
 module.exports = {
   mnemonicToSeed: mnemonicToSeed,
-  mnemonicToSeedHex: mnemonicToSeedHex,
+  mnemonicToSeedBuffer: mnemonicToSeedBuffer,
   mnemonicToEntropy: mnemonicToEntropy,
   entropyToMnemonic: entropyToMnemonic,
   generateMnemonic: generateMnemonic,
