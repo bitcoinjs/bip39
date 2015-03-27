@@ -7,7 +7,10 @@ var unorm = require('unorm')
 var DEFAULT_WORDLIST = require('./wordlists/en.json')
 
 function mnemonicToSeed(mnemonic, password) {
-  return pbkdf2(mnemonic, salt(password), 2048, 64, 'sha512')
+  var mnemonicBuffer = new Buffer(mnemonic, 'utf8')
+  var saltBuffer = new Buffer(salt(password), 'utf8')
+
+  return pbkdf2(mnemonicBuffer, saltBuffer, 2048, 64, 'sha512')
 }
 
 function mnemonicToSeedHex(mnemonic, password) {
