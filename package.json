@@ -28,6 +28,7 @@
   },
   "devDependencies": {
     "browserify": "^9.0.0",
-    "mocha": "^2.2.0"
+    "mocha": "^2.2.0",
+    "mock-require": "^1.0.5"
   }
 }

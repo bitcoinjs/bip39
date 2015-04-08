@@ -1,4 +1,10 @@
 var assert = require('assert')
+var mock = require('mock-require')
+
+mock('randombytes', function(size) {
+  return new Buffer('qwertyuiopasdfghjklzxcvbnm[];,./'.slice(0, size))
+})
+
 var BIP39 = require('../index.js')
 
 var wordlists = {
@@ -61,6 +67,10 @@ describe('BIP39', function() {
       var words = mnemonic.split(' ')
 
       assert.equal(words.length, 9)
+    })
+
+    it('defaults to randombytes for the RNG', function() {
+      assert.equal(BIP39.generateMnemonic(32), 'imitate robot frequent')
     })
 
     it('allows a custom RNG to be used', function() {
