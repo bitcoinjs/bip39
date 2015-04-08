@@ -1,6 +1,6 @@
 {
   "name": "bip39",
-  "version": "2.1.1",
+  "version": "2.1.2",
   "description": "Bitcoin BIP39: Mnemonic code for generating deterministic keys",
   "main": "index.js",
   "scripts": {
