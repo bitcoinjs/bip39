@@ -1,12 +1,16 @@
 var assert = require('assert')
-var crypto = require('crypto')
-var pbkdf2 = require('pbkdf2-compat').pbkdf2Sync
+var createHash = require('create-hash')
+var pbkdf2 = require('pbkdf2').pbkdf2Sync
+var randomBytes = require('randombytes')
 var unorm = require('unorm')
 
 var DEFAULT_WORDLIST = require('./wordlists/en.json')
 
 function mnemonicToSeed(mnemonic, password) {
-  return pbkdf2(mnemonic, salt(password), 2048, 64, 'sha512')
+  var mnemonicBuffer = new Buffer(mnemonic, 'utf8')
+  var saltBuffer = new Buffer(salt(password), 'utf8')
+
+  return pbkdf2(mnemonicBuffer, saltBuffer, 2048, 64, 'sha512')
 }
 
 function mnemonicToSeedHex(mnemonic, password) {
@@ -69,7 +73,7 @@ function entropyToMnemonic(entropy, wordlist) {
 
 function generateMnemonic(strength, rng, wordlist) {
   strength = strength || 128
-  rng = rng || crypto.randomBytes
+  rng = rng || randomBytes
 
   var hex = rng(strength / 8).toString('hex')
   return entropyToMnemonic(hex, wordlist)
@@ -86,7 +90,7 @@ function validateMnemonic(mnemonic, wordlist) {
 }
 
 function checksumBits(entropyBuffer) {
-  var hash = crypto.createHash('sha256').update(entropyBuffer).digest()
+  var hash = createHash('sha256').update(entropyBuffer).digest()
 
   // Calculated constants from BIP39
   var ENT = entropyBuffer.length * 8
