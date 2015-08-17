@@ -174,4 +174,9 @@ describe('BIP39', function() {
     // false
     assert.ok(! bool)
   })
+
+  it('exposes standard wordlists', function () {
+    assert(BIP39.wordlists.EN)
+    assert.equal(BIP39.wordlists.EN.length, 2048)
+  })
 })
