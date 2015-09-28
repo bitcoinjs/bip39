@@ -9,6 +9,7 @@ var BIP39 = require('../index.js')
 
 var wordlists = {
   english: require('../wordlists/en.json'),
+  japanese: require('../wordlists/ja.json'),
   custom: require('./wordlist.json')
 }
 
@@ -32,6 +33,12 @@ describe('BIP39', function() {
       })
     })
 
+    vectors.japanese.forEach(function(v, i) {
+      it('works for japanese tests vector ' + i, function() {
+        assert.equal(BIP39.mnemonicToEntropy(v[1], wordlists.japanese), v[0])
+      })
+    })
+
     vectors.custom.forEach(function(v, i) {
       it('works for custom test vector ' + i, function() {
         assert.equal(BIP39.mnemonicToEntropy(v[1], wordlists.custom), v[0])
@@ -43,6 +50,12 @@ describe('BIP39', function() {
     vectors.english.forEach(function(v, i) {
       it('works for tests vector ' + i, function() {
         assert.equal(BIP39.entropyToMnemonic(v[0]), v[1])
+      })
+    })
+
+    vectors.japanese.forEach(function(v, i) {
+      it('works for japanese test vector ' + i, function() {
+        assert.equal(BIP39.entropyToMnemonic(v[0], wordlists.japanese), v[1])
       })
     })
 
