@@ -5,6 +5,7 @@ var randomBytes = require('randombytes')
 var unorm = require('unorm')
 
 var DEFAULT_WORDLIST = require('./wordlists/en.json')
+var JAPANESE_WORDLIST = require('./wordlists/ja.json')
 
 function mnemonicToSeed(mnemonic, password) {
   var mnemonicBuffer = new Buffer(mnemonic, 'utf8')
@@ -124,6 +125,7 @@ module.exports = {
   generateMnemonic: generateMnemonic,
   validateMnemonic: validateMnemonic,
   wordlists: {
-    EN: DEFAULT_WORDLIST
+    EN: DEFAULT_WORDLIST,
+    JA: JAPANESE_WORDLIST
   }
 }
