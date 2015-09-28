@@ -8,7 +8,7 @@ var DEFAULT_WORDLIST = require('./wordlists/en.json')
 var JAPANESE_WORDLIST = require('./wordlists/ja.json')
 
 function mnemonicToSeed(mnemonic, password) {
-  var mnemonicBuffer = new Buffer(mnemonic, 'utf8')
+  var mnemonicBuffer = new Buffer(unorm.nfkd(mnemonic), 'utf8')
   var saltBuffer = new Buffer(salt(password), 'utf8')
 
   return pbkdf2(mnemonicBuffer, saltBuffer, 2048, 64, 'sha512')
