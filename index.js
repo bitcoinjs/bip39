@@ -21,7 +21,7 @@ function mnemonicToSeedHex(mnemonic, password) {
 function mnemonicToEntropy(mnemonic, wordlist) {
   wordlist = wordlist || DEFAULT_WORDLIST
 
-  var words = mnemonic.split(' ')
+  var words = unorm.nfkd(mnemonic).split(' ')
   assert(words.length % 3 === 0, 'Invalid mnemonic')
 
   var belongToList = words.every(function(word) {
@@ -69,7 +69,7 @@ function entropyToMnemonic(entropy, wordlist) {
     return wordlist[index]
   })
 
-  return words.join(' ')
+  return wordlist == JAPANESE_WORDLIST ? words.join('\u3000') : words.join(' ')
 }
 
 function generateMnemonic(strength, rng, wordlist) {
