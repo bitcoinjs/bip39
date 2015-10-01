@@ -9,31 +9,31 @@ var unorm = require('unorm')
 var DEFAULT_WORDLIST = require('./wordlists/en.json')
 var JAPANESE_WORDLIST = require('./wordlists/ja.json')
 
-function mnemonicToSeed(mnemonic, password) {
+function mnemonicToSeed (mnemonic, password) {
   var mnemonicBuffer = new Buffer(unorm.nfkd(mnemonic), 'utf8')
   var saltBuffer = new Buffer(salt(password), 'utf8')
 
   return pbkdf2(mnemonicBuffer, saltBuffer, 2048, 64, 'sha512')
 }
 
-function mnemonicToSeedHex(mnemonic, password) {
+function mnemonicToSeedHex (mnemonic, password) {
   return mnemonicToSeed(mnemonic, password).toString('hex')
 }
 
-function mnemonicToEntropy(mnemonic, wordlist) {
+function mnemonicToEntropy (mnemonic, wordlist) {
   wordlist = wordlist || DEFAULT_WORDLIST
 
   var words = unorm.nfkd(mnemonic).split(' ')
   assert(words.length % 3 === 0, 'Invalid mnemonic')
 
-  var belongToList = words.every(function(word) {
+  var belongToList = words.every(function (word) {
     return wordlist.indexOf(word) > -1
   })
 
   assert(belongToList, 'Invalid mnemonic')
 
   // convert word indices to 11 bit binary strings
-  var bits = words.map(function(word) {
+  var bits = words.map(function (word) {
     var index = wordlist.indexOf(word)
     return lpad(index.toString(2), '0', 11)
   }).join('')
@@ -44,7 +44,7 @@ function mnemonicToEntropy(mnemonic, wordlist) {
   var checksum = bits.slice(dividerIndex)
 
   // calculate the checksum and compare
-  var entropyBytes = entropy.match(/(.{1,8})/g).map(function(bin) {
+  var entropyBytes = entropy.match(/(.{1,8})/g).map(function (bin) {
     return parseInt(bin, 2)
   })
   var entropyBuffer = new Buffer(entropyBytes)
@@ -55,7 +55,7 @@ function mnemonicToEntropy(mnemonic, wordlist) {
   return entropyBuffer.toString('hex')
 }
 
-function entropyToMnemonic(entropy, wordlist) {
+function entropyToMnemonic (entropy, wordlist) {
   wordlist = wordlist || DEFAULT_WORDLIST
 
   var entropyBuffer = new Buffer(entropy, 'hex')
@@ -65,7 +65,7 @@ function entropyToMnemonic(entropy, wordlist) {
   var bits = entropyBits + checksum
   var chunks = bits.match(/(.{1,11})/g)
 
-  var words = chunks.map(function(binary) {
+  var words = chunks.map(function (binary) {
     var index = parseInt(binary, 2)
 
     return wordlist[index]
@@ -74,7 +74,7 @@ function entropyToMnemonic(entropy, wordlist) {
   return wordlist == JAPANESE_WORDLIST ? words.join('\u3000') : words.join(' ')
 }
 
-function generateMnemonic(strength, rng, wordlist) {
+function generateMnemonic (strength, rng, wordlist) {
   strength = strength || 128
   rng = rng || randomBytes
 
@@ -82,7 +82,7 @@ function generateMnemonic(strength, rng, wordlist) {
   return entropyToMnemonic(hex, wordlist)
 }
 
-function validateMnemonic(mnemonic, wordlist) {
+function validateMnemonic (mnemonic, wordlist) {
   try {
     mnemonicToEntropy(mnemonic, wordlist)
   } catch (e) {
@@ -92,7 +92,7 @@ function validateMnemonic(mnemonic, wordlist) {
   return true
 }
 
-function checksumBits(entropyBuffer) {
+function checksumBits (entropyBuffer) {
   var hash = createHash('sha256').update(entropyBuffer).digest()
 
   // Calculated constants from BIP39
@@ -102,21 +102,21 @@ function checksumBits(entropyBuffer) {
   return bytesToBinary([].slice.call(hash)).slice(0, CS)
 }
 
-function salt(password) {
+function salt (password) {
   return 'mnemonic' + (unorm.nfkd(password) || '')
 }
 
-//=========== helper methods from bitcoinjs-lib ========
+// =========== helper methods from bitcoinjs-lib ========
 
-function bytesToBinary(bytes) {
-  return bytes.map(function(x) {
+function bytesToBinary (bytes) {
+  return bytes.map(function (x) {
     return lpad(x.toString(2), '0', 8)
-  }).join('');
+  }).join('')
 }
 
-function lpad(str, padString, length) {
-  while (str.length < length) str = padString + str;
-  return str;
+function lpad (str, padString, length) {
+  while (str.length < length) str = padString + str
+  return str
 }
 
 module.exports = {
