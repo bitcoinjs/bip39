@@ -9,9 +9,13 @@ var unorm = require('unorm')
 var DEFAULT_WORDLIST = require('./wordlists/en.json')
 var JAPANESE_WORDLIST = require('./wordlists/ja.json')
 
+function salt (password) {
+  return 'mnemonic' + (password || '')
+}
+
 function mnemonicToSeed (mnemonic, password) {
   var mnemonicBuffer = new Buffer(unorm.nfkd(mnemonic), 'utf8')
-  var saltBuffer = new Buffer(salt(password), 'utf8')
+  var saltBuffer = new Buffer(salt(unorm.nfkd(password)), 'utf8')
 
   return pbkdf2(mnemonicBuffer, saltBuffer, 2048, 64, 'sha512')
 }
@@ -100,10 +104,6 @@ function checksumBits (entropyBuffer) {
   var CS = ENT / 32
 
   return bytesToBinary([].slice.call(hash)).slice(0, CS)
-}
-
-function salt (password) {
-  return 'mnemonic' + (unorm.nfkd(password) || '')
 }
 
 // =========== helper methods from bitcoinjs-lib ========
