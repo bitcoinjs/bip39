@@ -62,6 +62,8 @@ function mnemonicToEntropy (mnemonic, wordlist) {
 function entropyToMnemonic (entropy, wordlist) {
   wordlist = wordlist || DEFAULT_WORDLIST
 
+  assert(entropy.length >= 32, 'Not enough entropy: Minimum 16 bytes')
+
   var entropyBuffer = new Buffer(entropy, 'hex')
   var entropyBits = bytesToBinary([].slice.call(entropyBuffer))
   var checksum = checksumBits(entropyBuffer)
