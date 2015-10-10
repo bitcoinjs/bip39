@@ -3,7 +3,7 @@ var crypto = require('crypto')
 var pbkdf2 = require('pbkdf2-compat').pbkdf2Sync
 var unorm = require('unorm')
 
-var DEFAULT_WORDLIST = require('./wordlists/pt.json')
+var DEFAULT_WORDLIST = require('./wordlists/en.json')
 
 function mnemonicToSeed(mnemonic, password) {
   return pbkdf2(mnemonic, salt(password), 2048, 64, 'sha512')
