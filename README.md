@@ -1,7 +1,8 @@
 BIP39
 =====
 
-[![Build Status](https://travis-ci.org/weilu/bip39.png?branch=master)](https://travis-ci.org/weilu/bip39)
+[![Build Status](https://travis-ci.org/bitcoinjs/bip39.png?branch=master)](https://travis-ci.org/bitcoinjs/bip39)
+[![Version](http://img.shields.io/npm/v/bip39.svg)](https://www.npmjs.org/package/bip39)
 
 JavaScript implementation of [Bitcoin BIP39](https://github.com/bitcoin/bips/blob/master/bip-0039.mediawiki): Mnemonic code for generating deterministic keys
 
@@ -12,11 +13,12 @@ JavaScript implementation of [Bitcoin BIP39](https://github.com/bitcoin/bips/blo
 ```javascript
 var bip39 = require('bip39')
 
-var mnemonic = bip39.entropyToMnemonic('1337') // hex input, defaults to BIP39 English word list
-// 'basket actual'
+var mnemonic = bip39.entropyToMnemonic('133755ff') // hex input, defaults to BIP39 English word list
+// 'basket rival lemon'
+
 
 bip39.mnemonicToEntropy(mnemonic) // hex input, defaults to BIP39 English word list
-// '1337'
+// '133755ff'
 
 // Generate a random mnemonic using crypto.randomBytes
 mnemonic = bip39.generateMnemonic() // strength defaults to 128 bits
