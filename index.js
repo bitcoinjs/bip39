@@ -2,12 +2,10 @@ var assert = require('assert')
 var createHash = require('create-hash')
 var pbkdf2 = require('pbkdf2').pbkdf2Sync
 var randomBytes = require('randombytes')
+var typeforce = require('typeforce')
 
 // use unorm until String.prototype.normalize gets better browser support
 var unorm = require('unorm')
-
-var DEFAULT_WORDLIST = require('./wordlists/en.json')
-var JAPANESE_WORDLIST = require('./wordlists/ja.json')
 
 function salt (password) {
   return 'mnemonic' + (password || '')
@@ -24,8 +22,14 @@ function mnemonicToSeedHex (mnemonic, password) {
   return mnemonicToSeed(mnemonic, password).toString('hex')
 }
 
+/**
+ * Converts a mnemonic from the specified wordlist to entropy
+ * @param {string} mnemonic - required
+ * @param {array} wordlist - required, an array of strings
+ */
 function mnemonicToEntropy (mnemonic, wordlist) {
-  wordlist = wordlist || DEFAULT_WORDLIST
+  typeforce(typeforce.String, mnemonic)
+  typeforce(typeforce.arrayOf(typeforce.String), wordlist)
 
   var words = unorm.nfkd(mnemonic).split(' ')
   assert(words.length % 3 === 0, 'Invalid mnemonic')
@@ -59,8 +63,19 @@ function mnemonicToEntropy (mnemonic, wordlist) {
   return entropyBuffer.toString('hex')
 }
 
-function entropyToMnemonic (entropy, wordlist) {
-  wordlist = wordlist || DEFAULT_WORDLIST
+/**
+ * Converts entropy to a mnemonic with words from the supplied wordlist, separated by the supplied delimiter
+ * @param {string} entropy - required, in hex string
+ * @param {array} wordlist - required, an array of strings
+ * @param {string} delimiter - optional, default to ' '. This needs to be explicitly specified to '\u3000' when a Japanese wordlist is used.
+ */
+function entropyToMnemonic (entropy, wordlist, delimiter) {
+  //TODO(weilu): better error messages
+  typeforce('String', entropy)
+  typeforce(typeforce.arrayOf('String'), wordlist)
+  typeforce('?String', delimiter)
+
+  delimiter = delimiter || ' '
 
   var entropyBuffer = new Buffer(entropy, 'hex')
   var entropyBits = bytesToBinary([].slice.call(entropyBuffer))
@@ -75,18 +90,37 @@ function entropyToMnemonic (entropy, wordlist) {
     return wordlist[index]
   })
 
-  return wordlist == JAPANESE_WORDLIST ? words.join('\u3000') : words.join(' ')
+  return words.join(delimiter)
 }
 
-function generateMnemonic (strength, rng, wordlist) {
+/**
+ * Derive a mnemonic using the specified wordlist from a generated entropy. If the random number generator function is specified, use it.
+ * @param {array} wordlist - required, an array of strings
+ * @param {number} strength - optional, default to 128. Entropy bit length
+ * @param {function} rng - optional, default to crypto.randomBytes in node and .crypto/msCrypto.getRandomValues in browsers.
+ * @param {string} delimiter - optional, default to ' '. This needs to be explicitly specified to '\u3000' when a Japanese wordlist is used.
+ */
+function generateMnemonic (wordlist, strength, rng, delimiter) {
+  typeforce(typeforce.arrayOf(typeforce.String), wordlist)
+  typeforce(typeforce.maybe(typeforce.Number), strength)
+  typeforce(typeforce.maybe(typeforce.Function), rng)
+
   strength = strength || 128
   rng = rng || randomBytes
 
   var hex = rng(strength / 8).toString('hex')
-  return entropyToMnemonic(hex, wordlist)
+  return entropyToMnemonic(hex, wordlist, delimiter)
 }
 
+/**
+ * Validate a mnemonic against the specified wordlist
+ * @param {string} mnemonic - required
+ * @param {array} wordlist - required, an array of strings
+ */
 function validateMnemonic (mnemonic, wordlist) {
+  typeforce(typeforce.String, mnemonic)
+  typeforce(typeforce.arrayOf(typeforce.String), wordlist)
+
   try {
     mnemonicToEntropy(mnemonic, wordlist)
   } catch (e) {
