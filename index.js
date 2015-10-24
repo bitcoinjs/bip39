@@ -7,6 +7,8 @@ var typeforce = require('typeforce')
 // use unorm until String.prototype.normalize gets better browser support
 var unorm = require('unorm')
 
+var DEFAULT_DELIMITER = ' '
+
 function salt (password) {
   return 'mnemonic' + (password || '')
 }
@@ -31,7 +33,7 @@ function mnemonicToEntropy (mnemonic, wordlist) {
   typeforce(typeforce.String, mnemonic)
   typeforce(typeforce.arrayOf(typeforce.String), wordlist)
 
-  var words = unorm.nfkd(mnemonic).split(' ')
+  var words = unorm.nfkd(mnemonic).split(DEFAULT_DELIMITER)
   assert(words.length % 3 === 0, 'Invalid mnemonic')
 
   var belongToList = words.every(function (word) {
@@ -75,7 +77,7 @@ function entropyToMnemonic (entropy, wordlist, delimiter) {
   typeforce(typeforce.arrayOf('String'), wordlist)
   typeforce('?String', delimiter)
 
-  delimiter = delimiter || ' '
+  delimiter = delimiter || DEFAULT_DELIMITER
 
   var entropyBuffer = new Buffer(entropy, 'hex')
   var entropyBits = bytesToBinary([].slice.call(entropyBuffer))
