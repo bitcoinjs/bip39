@@ -157,17 +157,18 @@ describe('BIP39', function () {
 
   describe('Examples in readme', function () {
     var bip39 = BIP39
+    var wordlist = EN_WORD_LIST
 
-    var mnemonic = bip39.entropyToMnemonic('133755ff', wordlists.english) // hex input, defaults to BIP39 English word list
+    var mnemonic = bip39.entropyToMnemonic('133755ff', wordlist) // hex input, defaults to BIP39 English word list
     // 'basket rival lemon'
     assert.ok((/^\w+ \w+ \w+$/).test(mnemonic))
 
-    var temp = bip39.mnemonicToEntropy(mnemonic, wordlists.english) // hex input, defaults to BIP39 English word list
+    var temp = bip39.mnemonicToEntropy(mnemonic, wordlist) // hex input, defaults to BIP39 English word list
     // '133755ff'
     assert.equal(temp, '133755ff')
 
     // Generate a random mnemonic using crypto.randomBytes
-    mnemonic = bip39.generateMnemonic(wordlists.english) // strength defaults to 128 bits
+    mnemonic = bip39.generateMnemonic(wordlist) // strength defaults to 128 bits
     // 'bench maximum balance appear cousin negative muscle inform enjoy chief vocal hello'
     assert.ok(/^(\w+ ){11}\w+$/.test(mnemonic))
 
@@ -180,11 +181,11 @@ describe('BIP39', function () {
     assert.equal(buff[0], fiveC)
     // <Buffer 5c f2 d4 a8 b0 35 5e 90 29 5b df c5 65 a0 22 a4 09 af 06 3d 53 65 bb 57 bf 74 d9 52 8f 49 4b fa 44 00 f5 3d 83 49 b8 0f da e4 40 82 d7 f9 54 1e 1d ba 2b ...>
 
-    var bool = bip39.validateMnemonic(mnemonic, wordlists.english)
+    var bool = bip39.validateMnemonic(mnemonic, wordlist)
     // true
     assert.ok(bool)
 
-    bool = bip39.validateMnemonic('basket actual', wordlists.english)
+    bool = bip39.validateMnemonic('basket actual', wordlist)
 
     // false
     assert.ok(!bool)
