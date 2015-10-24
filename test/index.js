@@ -7,7 +7,8 @@ mock('randombytes', function (size) {
   return new Buffer('qwertyuiopasdfghjklzxcvbnm[];,./'.slice(0, size))
 })
 
-var BIP39 = require('../index.js')
+var BIP39 = require('../index')
+var EN_WORD_LIST = require('../wordlists/en')
 
 var wordlists = {
   english: require('../wordlists/en.json'),
@@ -190,7 +191,7 @@ describe('BIP39', function () {
   })
 
   it('exposes standard wordlists', function () {
-    assert(BIP39.wordlists.EN)
-    assert.equal(BIP39.wordlists.EN.length, 2048)
+    assert(EN_WORD_LIST)
+    assert.equal(EN_WORD_LIST.length, 2048)
   })
 })

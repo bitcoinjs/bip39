@@ -125,9 +125,5 @@ module.exports = {
   mnemonicToEntropy: mnemonicToEntropy,
   entropyToMnemonic: entropyToMnemonic,
   generateMnemonic: generateMnemonic,
-  validateMnemonic: validateMnemonic,
-  wordlists: {
-    EN: DEFAULT_WORDLIST,
-    JA: JAPANESE_WORDLIST
-  }
+  validateMnemonic: validateMnemonic
 }
