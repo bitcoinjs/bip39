@@ -30,41 +30,22 @@ describe('BIP39', function () {
   })
 
   describe('mnemonicToEntropy', function () {
-    vectors.english.forEach(function (v, i) {
-      it('works for tests vector ' + i, function () {
-        assert.equal(BIP39.mnemonicToEntropy(v[1], wordlists.english), v[0])
-      })
-    })
-
-    vectors.japanese.forEach(function (v, i) {
-      it('works for japanese tests vector ' + i, function () {
-        assert.equal(BIP39.mnemonicToEntropy(v[1], wordlists.japanese), v[0])
-      })
-    })
-
-    vectors.custom.forEach(function (v, i) {
-      it('works for custom test vector ' + i, function () {
-        assert.equal(BIP39.mnemonicToEntropy(v[1], wordlists.custom), v[0])
+    Object.keys(vectors).forEach(function (lang) {
+      vectors[lang].forEach(function (v, i) {
+        it('works for ' + lang + ' tests vector ' + i, function () {
+          assert.equal(BIP39.mnemonicToEntropy(v[1], wordlists[lang]), v[0])
+        })
       })
     })
   })
 
   describe('entropyToMnemonic', function () {
-    vectors.english.forEach(function (v, i) {
-      it('works for tests vector ' + i, function () {
-        assert.equal(BIP39.entropyToMnemonic(v[0], wordlists.english), v[1])
-      })
-    })
-
-    vectors.japanese.forEach(function (v, i) {
-      it('works for japanese test vector ' + i, function () {
-        assert.equal(BIP39.entropyToMnemonic(v[0], wordlists.japanese, '\u3000'), v[1])
-      })
-    })
-
-    vectors.custom.forEach(function (v, i) {
-      it('works for custom test vector ' + i, function () {
-        assert.equal(BIP39.entropyToMnemonic(v[0], wordlists.custom), v[1])
+    Object.keys(vectors).forEach(function (lang) {
+      vectors[lang].forEach(function (v, i) {
+        it('works for ' + lang + ' tests vector ' + i, function () {
+          var delimiter = (lang === 'japanese') ? '\u3000' : null
+          assert.equal(BIP39.entropyToMnemonic(v[0], wordlists[lang], delimiter), v[1])
+        })
       })
     })
   })
