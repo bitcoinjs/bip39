@@ -20,16 +20,16 @@ However, there should be other checks in place, such as checking to make sure th
 
 ```javascript
 var bip39 = require('bip39')
+var wordlist = require('bip39/wordlists/en')
 
-var mnemonic = bip39.entropyToMnemonic('133755ff') // hex input, defaults to BIP39 English word list
+bip39.entropyToMnemonic('133755ff', wordlist) // hex input, BIP39 English word list
 // 'basket rival lemon'
 
-
-bip39.mnemonicToEntropy(mnemonic) // hex input, defaults to BIP39 English word list
+bip39.mnemonicToEntropy(mnemonic, wordlist) // hex input, BIP39 English word list
 // '133755ff'
 
 // Generate a random mnemonic using crypto.randomBytes
-mnemonic = bip39.generateMnemonic() // strength defaults to 128 bits
+bip39.generateMnemonic(wordlist) // strength defaults to 128 bits
 // 'seed sock milk update focus rotate barely fade car face mechanic mercy'
 
 bip39.mnemonicToSeedHex('basket actual')
@@ -38,10 +38,10 @@ bip39.mnemonicToSeedHex('basket actual')
 bip39.mnemonicToSeed('basket actual')
 // <Buffer 5c f2 d4 a8 b0 35 5e 90 29 5b df c5 65 a0 22 a4 09 af 06 3d 53 65 bb 57 bf 74 d9 52 8f 49 4b fa 44 00 f5 3d 83 49 b8 0f da e4 40 82 d7 f9 54 1e 1d ba 2b ...>
 
-bip39.validateMnemonic(mnemonic)
+bip39.validateMnemonic(mnemonic, wordlist)
 // true
 
-bip39.validateMnemonic('basket actual')
+bip39.validateMnemonic('basket actual', wordlist)
 // false
 ```
 
