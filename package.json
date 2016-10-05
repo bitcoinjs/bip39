@@ -29,7 +29,7 @@
   },
   "devDependencies": {
     "mocha": "^2.2.0",
-    "mock-require": "^1.0.5",
+    "proxyquire": "^1.7.10",
     "standard": "*"
   }
 }

@@ -1,11 +1,7 @@
 /* global describe it */
 
 var assert = require('assert')
-var mock = require('mock-require')
-
-mock('randombytes', function (size) {
-  return new Buffer('qwertyuiopasdfghjklzxcvbnm[];,./'.slice(0, size))
-})
+var proxyquire = require('proxyquire')
 
 var BIP39 = require('../index.js')
 
@@ -165,8 +161,15 @@ describe('BIP39', function () {
     // '133755ff'
     assert.equal(temp, '133755ff')
 
+    var stub = {
+      randombytes: function (size) {
+        return new Buffer('qwertyuiopasdfghjklzxcvbnm[];,./'.slice(0, size))
+      }
+    }
+    var proxiedBIP39 = proxyquire('../', stub)
+
     // Generate a random mnemonic using crypto.randomBytes
-    mnemonic = bip39.generateMnemonic() // strength defaults to 128 bits
+    mnemonic = proxiedBIP39.generateMnemonic() // strength defaults to 128 bits
     // 'bench maximum balance appear cousin negative muscle inform enjoy chief vocal hello'
     assert.ok(/^(\w+ ){11}\w+$/.test(mnemonic))
 
