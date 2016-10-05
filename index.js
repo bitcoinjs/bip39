@@ -1,4 +1,3 @@
-var assert = require('assert')
 var createHash = require('create-hash')
 var pbkdf2 = require('pbkdf2').pbkdf2Sync
 var randomBytes = require('randombytes')
@@ -28,13 +27,11 @@ function mnemonicToEntropy (mnemonic, wordlist) {
   wordlist = wordlist || DEFAULT_WORDLIST
 
   var words = unorm.nfkd(mnemonic).split(' ')
-  assert(words.length % 3 === 0, 'Invalid mnemonic')
+  if (words.length % 3 !== 0) throw new Error('Invalid mnemonic')
 
-  var belongToList = words.every(function (word) {
-    return wordlist.indexOf(word) > -1
-  })
-
-  assert(belongToList, 'Invalid mnemonic')
+  if (words.some(function (word) {
+    return wordlist.indexOf(word) === -1
+  })) throw new Error('Invalid mnemonic')
 
   // convert word indices to 11 bit binary strings
   var bits = words.map(function (word) {
@@ -57,12 +54,14 @@ function mnemonicToEntropy (mnemonic, wordlist) {
   // recreate properly chunked and padded bits to get the properly padded checksum
   var bits2 = (entropy + newChecksum).match(/(.{1,11})/g).map(function (index) {
     return lpad(index, '0', 11)
-
   }).join('')
+
   var dividerIndex2 = Math.floor(bits2.length / 33) * 32
   var newChecksum2 = bits2.slice(dividerIndex2)
 
-  assert(newChecksum2 === checksum, 'Invalid mnemonic checksum')
+  if (newChecksum2 !== checksum) {
+    throw new Error('Invalid mnemonic checksum')
+  }
 
   return entropyBuffer.toString('hex')
 }
