@@ -28,7 +28,6 @@ function mnemonicToEntropy (mnemonic, wordlist) {
 
   var words = unorm.nfkd(mnemonic).split(' ')
   if (words.length % 3 !== 0) throw new Error('Invalid mnemonic')
-
   if (words.some(function (word) {
     return wordlist.indexOf(word) === -1
   })) throw new Error('Invalid mnemonic')
