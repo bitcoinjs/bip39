@@ -1,2 +1,3 @@
 node_modules
-bip39.js
+.nyc_output/
+npm-debug.log

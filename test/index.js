@@ -1,196 +1,118 @@
-/* global describe it */
-
-var assert = require('assert')
-var mock = require('mock-require')
-
-mock('randombytes', function (size) {
-  return new Buffer('qwertyuiopasdfghjklzxcvbnm[];,./'.slice(0, size))
-})
-
-var BIP39 = require('../index.js')
-
-var wordlists = {
+var bip39 = require('../')
+var proxyquire = require('proxyquire')
+var WORDLISTS = {
   english: require('../wordlists/en.json'),
   japanese: require('../wordlists/ja.json'),
   custom: require('./wordlist.json')
 }
 
 var vectors = require('./vectors.json')
+var test = require('tape')
 
-describe('BIP39', function () {
-  describe('mnemonicToSeedHex', function () {
-    this.timeout(20000)
+function testVector (description, wordlist, password, v, i) {
+  var ventropy = v[0]
+  var vmnemonic = v[1]
+  var vseedHex = v[2]
 
-    vectors.english.forEach(function (v, i) {
-      it('works for tests vector ' + i, function () {
-        assert.equal(BIP39.mnemonicToSeedHex(v[1], 'TREZOR'), v[2])
-      })
-    })
+  test('for ' + description + ' test vector ' + i, function (t) {
+    t.plan(5)
+
+    t.equal(bip39.mnemonicToEntropy(vmnemonic, wordlist), ventropy, 'mnemonicToEntropy returns ' + ventropy.slice(0, 40) + '...')
+    t.equal(bip39.mnemonicToSeedHex(vmnemonic, password), vseedHex, 'mnemonicToSeedHex returns ' + vseedHex.slice(0, 40) + '...')
+
+    t.equal(bip39.entropyToMnemonic(ventropy, wordlist), vmnemonic, 'entropyToMnemonic returns ' + vmnemonic.slice(0, 40) + '...')
+
+    function rng () { return new Buffer(ventropy, 'hex') }
+    t.equal(bip39.generateMnemonic(undefined, rng, wordlist), vmnemonic, 'generateMnemonic returns RNG entropy unmodified')
+    t.equal(bip39.validateMnemonic(vmnemonic, wordlist), true, 'validateMnemonic returns true')
   })
+}
 
-  describe('mnemonicToEntropy', function () {
-    vectors.english.forEach(function (v, i) {
-      it('works for tests vector ' + i, function () {
-        assert.equal(BIP39.mnemonicToEntropy(v[1]), v[0])
-      })
-    })
+vectors.english.forEach(function (v, i) { testVector('English', undefined, 'TREZOR', v, i) })
+vectors.japanese.forEach(function (v, i) { testVector('Japanese', WORDLISTS.japanese, '㍍ガバヴァぱばぐゞちぢ十人十色', v, i) })
+vectors.custom.forEach(function (v, i) { testVector('Custom', WORDLISTS.custom, undefined, v, i) })
 
-    vectors.japanese.forEach(function (v, i) {
-      it('works for japanese tests vector ' + i, function () {
-        assert.equal(BIP39.mnemonicToEntropy(v[1], wordlists.japanese), v[0])
-      })
-    })
+test('UTF8 passwords', function (t) {
+  t.plan(vectors.japanese.length * 2)
 
-    vectors.custom.forEach(function (v, i) {
-      it('works for custom test vector ' + i, function () {
-        assert.equal(BIP39.mnemonicToEntropy(v[1], wordlists.custom), v[0])
-      })
-    })
+  vectors.japanese.forEach(function (v) {
+    var vmnemonic = v[1]
+    var vseedHex = v[2]
+
+    var password = '㍍ガバヴァぱばぐゞちぢ十人十色'
+    var normalizedPassword = 'メートルガバヴァぱばぐゞちぢ十人十色'
+
+    t.equal(bip39.mnemonicToSeedHex(vmnemonic, password), vseedHex, 'mnemonicToSeedHex normalizes passwords')
+    t.equal(bip39.mnemonicToSeedHex(vmnemonic, normalizedPassword), vseedHex, 'mnemonicToSeedHex leaves normalizes passwords as-is')
   })
+})
 
-  describe('entropyToMnemonic', function () {
-    vectors.english.forEach(function (v, i) {
-      it('works for tests vector ' + i, function () {
-        assert.equal(BIP39.entropyToMnemonic(v[0]), v[1])
-      })
-    })
+test('README example 1', function (t) {
+  // defaults to BIP39 English word list
+  var entropy = '133755ff'
+  var mnemonic = bip39.entropyToMnemonic(entropy)
 
-    vectors.japanese.forEach(function (v, i) {
-      it('works for japanese test vector ' + i, function () {
-        assert.equal(BIP39.entropyToMnemonic(v[0], wordlists.japanese), v[1])
-      })
-    })
+  t.plan(2)
+  t.equal(mnemonic, 'basket rival lemon')
 
-    vectors.custom.forEach(function (v, i) {
-      it('works for custom test vector ' + i, function () {
-        assert.equal(BIP39.entropyToMnemonic(v[0], wordlists.custom), v[1])
-      })
-    })
+  // reversible
+  t.equal(bip39.mnemonicToEntropy(mnemonic), entropy)
+})
+
+test('README example 2', function (t) {
+  var stub = {
+    randombytes: function (size) {
+      return new Buffer('qwertyuiopasdfghjklzxcvbnm[];,./'.slice(0, size))
+    }
+  }
+  var proxiedbip39 = proxyquire('../', stub)
+
+  // mnemonic strength defaults to 128 bits
+  var mnemonic = proxiedbip39.generateMnemonic()
+
+  t.plan(2)
+  t.equal(mnemonic, 'imitate robot frame trophy nuclear regret saddle around inflict case oil spice')
+  t.equal(bip39.validateMnemonic(mnemonic), true)
+})
+
+test('README example 3', function (t) {
+  var mnemonic = 'basket actual'
+  var seed = bip39.mnemonicToSeed(mnemonic)
+  var seedHex = bip39.mnemonicToSeedHex(mnemonic)
+
+  t.plan(3)
+  t.equal(seed.toString('hex'), seedHex)
+  t.equal(seedHex, '5cf2d4a8b0355e90295bdfc565a022a409af063d5365bb57bf74d9528f494bfa4400f53d8349b80fdae44082d7f9541e1dba2b003bcfec9d0d53781ca676651f')
+  t.equal(bip39.validateMnemonic(mnemonic), false)
+})
+
+test('generateMnemonic can vary entropy length', function (t) {
+  var words = bip39.generateMnemonic(96).split(' ')
+
+  t.plan(1)
+  t.equal(words.length, 9, 'can vary generated entropy bit length')
+})
+
+test('generateMnemonic only requests the exact amount of data from an RNG', function (t) {
+  t.plan(1)
+
+  bip39.generateMnemonic(96, function (size) {
+    t.equal(size, 96 / 8)
+    return new Buffer(size)
   })
+})
 
-  describe('generateMnemonic', function () {
-    vectors.english.forEach(function (v, i) {
-      it('works for tests vector ' + i, function () {
-        function rng () { return new Buffer(v[0], 'hex') }
+test('validateMnemonic', function (t) {
+  t.plan(4)
 
-        assert.equal(BIP39.generateMnemonic(undefined, rng), v[1])
-      })
-    })
+  t.equal(bip39.validateMnemonic('sleep kitten'), false, 'fails for a mnemonic that is too short')
+  t.equal(bip39.validateMnemonic('sleep kitten sleep kitten sleep kitten'), false, 'fails for a mnemonic that is too short')
+  t.equal(bip39.validateMnemonic('turtle front uncle idea crush write shrug there lottery flower risky shell'), false, 'fails if mnemonic words are not in the word list')
+  t.equal(bip39.validateMnemonic('sleep kitten sleep kitten sleep kitten sleep kitten sleep kitten sleep kitten'), false, 'fails for invalid checksum')
+})
 
-    it('can vary generated entropy bit length', function () {
-      var mnemonic = BIP39.generateMnemonic(96)
-      var words = mnemonic.split(' ')
-
-      assert.equal(words.length, 9)
-    })
-
-    it('defaults to randombytes for the RNG', function () {
-      assert.equal(BIP39.generateMnemonic(32), 'imitate robot frequent')
-    })
-
-    it('allows a custom RNG to be used', function () {
-      var rng = function (size) {
-        var buffer = new Buffer(size)
-        buffer.fill(4) // guaranteed random
-        return buffer
-      }
-
-      var mnemonic = BIP39.generateMnemonic(64, rng)
-      assert.equal(mnemonic, 'advice cage absurd amount doctor act')
-    })
-
-    it('adheres to a custom wordlist', function () {
-      var rng = function (size) {
-        var buffer = new Buffer(size)
-        buffer.fill(4) // guaranteed random
-        return buffer
-      }
-
-      var mnemonic = BIP39.generateMnemonic(64, rng, wordlists.custom)
-      assert.equal(mnemonic, 'adv1c3 cag3 ab5urd am0unt d0ct0r act')
-    })
-  })
-
-  describe('validateMnemonic', function () {
-    vectors.english.forEach(function (v, i) {
-      it('passes check ' + i, function () {
-        assert(BIP39.validateMnemonic(v[1]))
-      })
-    })
-
-    describe('with a custom wordlist', function () {
-      vectors.custom.forEach(function (v, i) {
-        it('passes custom check ' + i, function () {
-          assert(BIP39.validateMnemonic(v[1], wordlists.custom))
-        })
-      })
-    })
-
-    it('fails for mnemonics of wrong length', function () {
-      assert(!BIP39.validateMnemonic('sleep kitten'))
-      assert(!BIP39.validateMnemonic('sleep kitten sleep kitten sleep kitten'))
-    })
-
-    it('fails for mnemonics that contains words not from the word list', function () {
-      assert(!BIP39.validateMnemonic('turtle front uncle idea crush write shrug there lottery flower risky shell'))
-    })
-
-    it('fails for mnemonics of invalid checksum', function () {
-      assert(!BIP39.validateMnemonic('sleep kitten sleep kitten sleep kitten sleep kitten sleep kitten sleep kitten'))
-    })
-  })
-
-  describe('utf8 passwords', function () {
-    vectors.japanese.forEach(function (v) {
-      it('creates the correct seed', function () {
-        var utf8Password = '㍍ガバヴァぱばぐゞちぢ十人十色'
-        assert.equal(BIP39.mnemonicToSeedHex(v[1], utf8Password), v[2])
-      })
-
-      it('works with already normalized password', function () {
-        var normalizedPassword = 'メートルガバヴァぱばぐゞちぢ十人十色'
-        assert.equal(BIP39.mnemonicToSeedHex(v[1], normalizedPassword), v[2])
-      })
-    })
-  })
-
-  describe('Examples in readme', function () {
-    var bip39 = BIP39
-
-    var mnemonic = bip39.entropyToMnemonic('133755ff') // hex input, defaults to BIP39 English word list
-    // 'basket rival lemon'
-    assert.ok((/^\w+ \w+ \w+$/).test(mnemonic))
-
-    var temp = bip39.mnemonicToEntropy(mnemonic) // hex input, defaults to BIP39 English word list
-    // '133755ff'
-    assert.equal(temp, '133755ff')
-
-    // Generate a random mnemonic using crypto.randomBytes
-    mnemonic = bip39.generateMnemonic() // strength defaults to 128 bits
-    // 'bench maximum balance appear cousin negative muscle inform enjoy chief vocal hello'
-    assert.ok(/^(\w+ ){11}\w+$/.test(mnemonic))
-
-    var str = bip39.mnemonicToSeedHex('basket actual')
-    // '5cf2d4a8b0355e90295bdfc565a022a409af063d5365bb57bf74d9528f494bfa4400f53d8349b80fdae44082d7f9541e1dba2b003bcfec9d0d53781ca676651f'
-    assert.equal(str, '5cf2d4a8b0355e90295bdfc565a022a409af063d5365bb57bf74d9528f494bfa4400f53d8349b80fdae44082d7f9541e1dba2b003bcfec9d0d53781ca676651f')
-
-    var buff = bip39.mnemonicToSeed('basket actual')
-    var fiveC = 5 * 16 + 12
-    assert.equal(buff[0], fiveC)
-    // <Buffer 5c f2 d4 a8 b0 35 5e 90 29 5b df c5 65 a0 22 a4 09 af 06 3d 53 65 bb 57 bf 74 d9 52 8f 49 4b fa 44 00 f5 3d 83 49 b8 0f da e4 40 82 d7 f9 54 1e 1d ba 2b ...>
-
-    var bool = bip39.validateMnemonic(mnemonic)
-    // true
-    assert.ok(bool)
-
-    bool = bip39.validateMnemonic('basket actual')
-
-    // false
-    assert.ok(!bool)
-  })
-
-  it('exposes standard wordlists', function () {
-    assert(BIP39.wordlists.EN)
-    assert.equal(BIP39.wordlists.EN.length, 2048)
-  })
+test('exposes standard wordlists', function (t) {
+  t.plan(2)
+  t.same(bip39.wordlists.EN, WORDLISTS.english)
+  t.equal(bip39.wordlists.EN.length, 2048)
 })
