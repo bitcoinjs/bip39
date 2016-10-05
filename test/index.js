@@ -71,7 +71,7 @@ test('README example 2', function (t) {
   var mnemonic = proxiedbip39.generateMnemonic()
 
   t.plan(2)
-  t.equal(mnemonic, 'bench maximum balance appear cousin negative muscle inform enjoy chief vocal hello')
+  t.equal(mnemonic, 'imitate robot frame trophy nuclear regret saddle around inflict case oil spice')
   t.equal(bip39.validateMnemonic(mnemonic), true)
 })
 
