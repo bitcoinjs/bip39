@@ -55,7 +55,7 @@ function mnemonicToEntropy (mnemonic, wordlist) {
   var newChecksum = checksumBits(entropyBuffer)
 
   // recreate properly chunked and padded bits to get the properly padded checksum
-  var bits2 = (entropy + newChecksum).match(/(.{1,11})/g).map(function(index) {
+  var bits2 = (entropy + newChecksum).match(/(.{1,11})/g).map(function (index) {
     return lpad(index, '0', 11)
 
   }).join('')
