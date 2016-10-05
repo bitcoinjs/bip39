@@ -54,7 +54,15 @@ function mnemonicToEntropy (mnemonic, wordlist) {
   var entropyBuffer = new Buffer(entropyBytes)
   var newChecksum = checksumBits(entropyBuffer)
 
-  assert(newChecksum === checksum, 'Invalid mnemonic checksum')
+  // recreate properly chunked and padded bits to get the properly padded checksum
+  var bits2 = (entropy + newChecksum).match(/(.{1,11})/g).map(function(index) {
+    return lpad(index, '0', 11)
+
+  }).join('')
+  var dividerIndex2 = Math.floor(bits2.length / 33) * 32
+  var newChecksum2 = bits2.slice(dividerIndex2)
+
+  assert(newChecksum2 === checksum, 'Invalid mnemonic checksum')
 
   return entropyBuffer.toString('hex')
 }
