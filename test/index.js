@@ -1,8 +1,8 @@
 var bip39 = require('../')
 var proxyquire = require('proxyquire')
 var WORDLISTS = {
-  english: require('../wordlists/en.json'),
-  japanese: require('../wordlists/ja.json'),
+  english: require('../wordlists/english.json'),
+  japanese: require('../wordlists/japanese.json'),
   custom: require('./wordlist.json')
 }
 
