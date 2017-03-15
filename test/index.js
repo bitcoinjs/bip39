@@ -1,5 +1,6 @@
 var bip39 = require('../')
 var proxyquire = require('proxyquire')
+var download = require('../util/wordlists').download
 var WORDLISTS = {
   english: require('../wordlists/english.json'),
   japanese: require('../wordlists/japanese.json'),
@@ -115,4 +116,14 @@ test('exposes standard wordlists', function (t) {
   t.plan(2)
   t.same(bip39.wordlists.EN, WORDLISTS.english)
   t.equal(bip39.wordlists.EN.length, 2048)
+})
+
+test('verify wordlists from https://github.com/bitcoin/bips/blob/master/bip-0039/bip-0039-wordlists.md', function (t) {
+  download().then(function (wordlists) {
+    Object.keys(wordlists).forEach(function (name) {
+      t.same(bip39.wordlists[name], wordlists[name])
+    })
+
+    t.end()
+  })
 })
