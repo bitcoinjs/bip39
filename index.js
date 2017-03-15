@@ -5,8 +5,12 @@ var randomBytes = require('randombytes')
 // use unorm until String.prototype.normalize gets better browser support
 var unorm = require('unorm')
 
-var DEFAULT_WORDLIST = require('./wordlists/en.json')
-var JAPANESE_WORDLIST = require('./wordlists/ja.json')
+var ENGLISH_WORDLIST = require('./wordlists/english.json')
+var FRENCH_WORDLIST = require('./wordlists/french.json')
+var ITALIAN_WORDLIST = require('./wordlists/italian.json')
+var JAPANESE_WORDLIST = require('./wordlists/japanese.json')
+var SPANISH_WORDLIST = require('./wordlists/spanish.json')
+var DEFAULT_WORDLIST = ENGLISH_WORDLIST
 
 function salt (password) {
   return 'mnemonic' + (password || '')
@@ -133,7 +137,13 @@ module.exports = {
   generateMnemonic: generateMnemonic,
   validateMnemonic: validateMnemonic,
   wordlists: {
-    EN: DEFAULT_WORDLIST,
-    JA: JAPANESE_WORDLIST
+    EN: ENGLISH_WORDLIST,
+    JA: JAPANESE_WORDLIST,
+
+    english: ENGLISH_WORDLIST,
+    french: FRENCH_WORDLIST,
+    italian: ITALIAN_WORDLIST,
+    japanese: JAPANESE_WORDLIST,
+    spanish: SPANISH_WORDLIST
   }
 }
