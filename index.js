@@ -5,6 +5,11 @@ var randomBytes = require('randombytes')
 // use unorm until String.prototype.normalize gets better browser support
 var unorm = require('unorm')
 
+function lpad (str, padString, length) {
+  while (str.length < length) str = padString + str
+  return str
+}
+
 var ENGLISH_WORDLIST = require('./wordlists/english.json')
 var FRENCH_WORDLIST = require('./wordlists/french.json')
 var ITALIAN_WORDLIST = require('./wordlists/italian.json')
@@ -106,6 +111,12 @@ function validateMnemonic (mnemonic, wordlist) {
   return true
 }
 
+function bytesToBinary (bytes) {
+  return bytes.map(function (x) {
+    return lpad(x.toString(2), '0', 8)
+  }).join('')
+}
+
 function checksumBits (entropyBuffer) {
   var hash = createHash('sha256').update(entropyBuffer).digest()
 
@@ -114,19 +125,6 @@ function checksumBits (entropyBuffer) {
   var CS = ENT / 32
 
   return bytesToBinary([].slice.call(hash)).slice(0, CS)
-}
-
-// =========== helper methods from bitcoinjs-lib ========
-
-function bytesToBinary (bytes) {
-  return bytes.map(function (x) {
-    return lpad(x.toString(2), '0', 8)
-  }).join('')
-}
-
-function lpad (str, padString, length) {
-  while (str.length < length) str = padString + str
-  return str
 }
 
 module.exports = {
