@@ -15,7 +15,7 @@ function testVector (description, wordlist, password, v, i) {
   var vmnemonic = v[1]
   var vseedHex = v[2]
 
-  test('for ' + description + ' test vector ' + i, function (t) {
+  test('for ' + description + '(' + i + '), ' + ventropy, function (t) {
     t.plan(5)
 
     t.equal(bip39.mnemonicToEntropy(vmnemonic, wordlist), ventropy, 'mnemonicToEntropy returns ' + ventropy.slice(0, 40) + '...')
