@@ -40,13 +40,12 @@ function mnemonicToEntropy (mnemonic, wordlist) {
 
   var words = unorm.nfkd(mnemonic).split(' ')
   if (words.length % 3 !== 0) throw new Error(INVALID_MNEMONIC)
-  if (words.some(function (word) {
-    return wordlist.indexOf(word) === -1
-  })) throw new Error(INVALID_MNEMONIC)
 
   // convert word indices to 11 bit binary strings
   var bits = words.map(function (word) {
     var index = wordlist.indexOf(word)
+    if (index === -1) throw new Error(INVALID_MNEMONIC)
+
     return lpad(index.toString(2), '0', 11)
   }).join('')
 
