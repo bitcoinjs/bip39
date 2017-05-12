@@ -55,15 +55,7 @@ function mnemonicToEntropy (mnemonic, wordlist) {
   if (entropyBuffer.length % 4 !== 0) throw new TypeError('Mnemonic entropy is not a multiple of 32 bits')
 
   var newChecksum = checksumBits(entropyBuffer)
-
-  // recreate properly chunked and padded bits to get the properly padded checksum
-  var bits2 = (entropy + newChecksum).match(/(.{1,11})/g).map(function (index) {
-    return lpad(index, '0', 11)
-  }).join('')
-
-  var dividerIndex2 = Math.floor(bits2.length / 33) * 32
-  var newChecksum2 = bits2.slice(dividerIndex2)
-  if (newChecksum2 !== checksum) throw new Error('Invalid mnemonic checksum')
+  if (newChecksum !== checksum) throw new Error('Invalid mnemonic checksum')
 
   return entropyBuffer.toString('hex')
 }
