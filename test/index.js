@@ -37,15 +37,15 @@ test('invalid entropy', function (t) {
 
   t.throws(function () {
     bip39.entropyToMnemonic(new Buffer('', 'hex'))
-  }, /^Invalid entropy$/, 'throws for empty entropy')
+  }, /^Error: Invalid entropy$/, 'throws for empty entropy')
 
   t.throws(function () {
     bip39.entropyToMnemonic(new Buffer('000000', 'hex'))
-  }, /^Invalid entropy$/, 'throws for entropy that\'s not a multitude of 4 bytes')
+  }, /^Error: Invalid entropy$/, 'throws for entropy that\'s not a multitude of 4 bytes')
 
   t.throws(function () {
     bip39.entropyToMnemonic(new Buffer(new Array(1028 + 1).join('00'), 'hex'))
-  }, /^Invalid entropy$/, 'throws for entropy that is larger than 1024')
+  }, /^Error: Invalid entropy$/, 'throws for entropy that is larger than 1024')
 })
 
 test('UTF8 passwords', function (t) {
