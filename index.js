@@ -113,7 +113,7 @@ function checksumBits (entropyBuffer) {
   var ENT = entropyBuffer.length * 8
   var CS = ENT / 32
 
-  return bytesToBinary([].slice.call(hash)).slice(0, CS)
+  return bytesToBinary([].slice.call(hash, 0, Math.ceil(CS/8))).slice(0, CS)
 }
 
 // =========== helper methods from bitcoinjs-lib ========
