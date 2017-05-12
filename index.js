@@ -42,6 +42,11 @@ function mnemonicToEntropy (mnemonic, wordlist) {
     return lpad(index.toString(2), '0', 11)
   }).join('')
 
+  // max entropy is 1024; (1024×8)+((1024×8)÷32) = 8448
+  if (bits.length > 8448) {
+    throw new Error('Invalid mnemonic')
+  }
+
   // split the binary string into ENT/CS
   var dividerIndex = Math.floor(bits.length / 33) * 32
   var entropy = bits.slice(0, dividerIndex)
@@ -54,17 +59,7 @@ function mnemonicToEntropy (mnemonic, wordlist) {
   var entropyBuffer = new Buffer(entropyBytes)
   var newChecksum = checksumBits(entropyBuffer)
 
-  // recreate properly chunked and padded bits to get the properly padded checksum
-  var bits2 = (entropy + newChecksum).match(/(.{1,11})/g).map(function (index) {
-    return lpad(index, '0', 11)
-  }).join('')
-
-  var dividerIndex2 = Math.floor(bits2.length / 33) * 32
-  var newChecksum2 = bits2.slice(dividerIndex2)
-
-  if (newChecksum2 !== checksum) {
-    throw new Error('Invalid mnemonic checksum')
-  }
+  if (newChecksum !== checksum) throw new Error('Invalid mnemonic checksum')
 
   return entropyBuffer.toString('hex')
 }
@@ -73,6 +68,11 @@ function entropyToMnemonic (entropy, wordlist) {
   wordlist = wordlist || DEFAULT_WORDLIST
 
   var entropyBuffer = new Buffer(entropy, 'hex')
+
+  if (entropyBuffer.length === 0 || entropyBuffer.length > 1024 || entropyBuffer.length % 4 !== 0) {
+    throw new Error('Invalid entropy')
+  }
+
   var entropyBits = bytesToBinary([].slice.call(entropyBuffer))
   var checksum = checksumBits(entropyBuffer)
 
