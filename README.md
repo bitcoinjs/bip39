@@ -42,8 +42,8 @@ var bip39 = require('bip39')
 
 // defaults to BIP39 English word list
 // uses HEX strings for entropy
-var mnemonic = bip39.entropyToMnemonic('133755ff')
-// => basket rival lemon
+var mnemonic = bip39.entropyToMnemonic('00000000000000000000000000000000')
+// => zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo wrong
 
 // reversible
 bip39.mnemonicToEntropy(mnemonic)
