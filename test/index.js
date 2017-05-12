@@ -104,8 +104,14 @@ test('generateMnemonic only requests the exact amount of data from an RNG', func
 })
 
 test('validateMnemonic', function (t) {
-  t.plan(4)
+  t.plan(6)
 
+  t.throws(() => {
+    bip39.mnemonicToEntropy(bip39.entropyToMnemonic('1111'))
+  }, /Mnemonic entropy is not a multiple of 32 bits/)
+  t.throws(() => {
+    bip39.mnemonicToEntropy('sleep kitten')
+  }, /Mnemonic entropy is not a multiple of 32 bits/)
   t.equal(bip39.validateMnemonic('sleep kitten'), false, 'fails for a mnemonic that is too short')
   t.equal(bip39.validateMnemonic('sleep kitten sleep kitten sleep kitten'), false, 'fails for a mnemonic that is too short')
   t.equal(bip39.validateMnemonic('turtle front uncle idea crush write shrug there lottery flower risky shell'), false, 'fails if mnemonic words are not in the word list')

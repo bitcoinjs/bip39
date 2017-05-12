@@ -31,10 +31,10 @@ function mnemonicToEntropy (mnemonic, wordlist) {
   wordlist = wordlist || DEFAULT_WORDLIST
 
   var words = unorm.nfkd(mnemonic).split(' ')
-  if (words.length % 3 !== 0) throw new Error('Invalid mnemonic')
+  if (words.length % 3 !== 0) throw new TypeError('Mnemonic entropy is not a multiple of 32 bits')
   if (words.some(function (word) {
     return wordlist.indexOf(word) === -1
-  })) throw new Error('Invalid mnemonic')
+  })) throw new TypeError('Invalid mnemonic')
 
   // convert word indices to 11 bit binary strings
   var bits = words.map(function (word) {
@@ -52,6 +52,8 @@ function mnemonicToEntropy (mnemonic, wordlist) {
     return parseInt(bin, 2)
   })
   var entropyBuffer = new Buffer(entropyBytes)
+  if (entropyBuffer.length % 4 !== 0) throw new TypeError('Mnemonic entropy is not a multiple of 32 bits')
+
   var newChecksum = checksumBits(entropyBuffer)
 
   // recreate properly chunked and padded bits to get the properly padded checksum
@@ -61,16 +63,14 @@ function mnemonicToEntropy (mnemonic, wordlist) {
 
   var dividerIndex2 = Math.floor(bits2.length / 33) * 32
   var newChecksum2 = bits2.slice(dividerIndex2)
-
-  if (newChecksum2 !== checksum) {
-    throw new Error('Invalid mnemonic checksum')
-  }
+  if (newChecksum2 !== checksum) throw new Error('Invalid mnemonic checksum')
 
   return entropyBuffer.toString('hex')
 }
 
 function entropyToMnemonic (entropy, wordlist) {
   wordlist = wordlist || DEFAULT_WORDLIST
+  if (entropy.length % 8 !== 0) throw new TypeError('Mnemonic entropy is not a multiple of 32 bits')
 
   var entropyBuffer = new Buffer(entropy, 'hex')
   var entropyBits = bytesToBinary([].slice.call(entropyBuffer))
