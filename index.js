@@ -59,7 +59,7 @@ function mnemonicToEntropy (mnemonic, wordlist) {
 
   // calculate the checksum and compare
   var entropyBytes = entropy.match(/(.{1,8})/g).map(binaryToByte)
-  if (entropy.length % 4 !== 0) throw new TypeError(INVALID_ENTROPY)
+  if (entropy.length % 4 !== 0) throw new Error(INVALID_ENTROPY)
   var entropyBuffer = new Buffer(entropyBytes)
 
   var newChecksum = checksumBits(entropyBuffer)
@@ -72,11 +72,11 @@ function entropyToMnemonic (entropyHex, wordlist) {
   wordlist = wordlist || DEFAULT_WORDLIST
 
   // 128 <= ENT <= 256
-  if (entropyHex.length < 32) throw new Error(INVALID_ENTROPY)
-  if (entropyHex.length > 64) throw new Error(INVALID_ENTROPY)
+  if (entropyHex.length < 32) throw new TypeError(INVALID_ENTROPY)
+  if (entropyHex.length > 64) throw new TypeError(INVALID_ENTROPY)
 
   // multiple of 4
-  if (entropyHex.length % 8 !== 0) throw new Error(INVALID_ENTROPY)
+  if (entropyHex.length % 8 !== 0) throw new TypeError(INVALID_ENTROPY)
 
   var entropy = new Buffer(entropyHex, 'hex')
   var entropyBits = bytesToBinary([].slice.call(entropy))
