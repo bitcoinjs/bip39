@@ -5,11 +5,6 @@ var randomBytes = require('randombytes')
 // use unorm until String.prototype.normalize gets better browser support
 var unorm = require('unorm')
 
-function lpad (str, padString, length) {
-  while (str.length < length) str = padString + str
-  return str
-}
-
 var ENGLISH_WORDLIST = require('./wordlists/english.json')
 var FRENCH_WORDLIST = require('./wordlists/french.json')
 var ITALIAN_WORDLIST = require('./wordlists/italian.json')
@@ -19,6 +14,30 @@ var DEFAULT_WORDLIST = ENGLISH_WORDLIST
 
 var INVALID_MNEMONIC = 'Invalid mnemonic'
 var INVALID_ENTROPY = 'Invalid entropy'
+var INVALID_CHECKSUM = 'Invalid mnemonic checksum'
+
+function lpad (str, padString, length) {
+  while (str.length < length) str = padString + str
+  return str
+}
+
+function binaryToByte (bin) {
+  return parseInt(bin, 2)
+}
+
+function bytesToBinary (bytes) {
+  return bytes.map(function (x) {
+    return lpad(x.toString(2), '0', 8)
+  }).join('')
+}
+
+function deriveChecksumBits (entropyBuffer) {
+  var ENT = entropyBuffer.length * 8
+  var CS = ENT / 32
+  var hash = createHash('sha256').update(entropyBuffer).digest()
+
+  return bytesToBinary([].slice.call(hash)).slice(0, CS)
+}
 
 function salt (password) {
   return 'mnemonic' + (password || '')
@@ -54,18 +73,18 @@ function mnemonicToEntropy (mnemonic, wordlist) {
 
   // split the binary string into ENT/CS
   var dividerIndex = Math.floor(bits.length / 33) * 32
-  var entropy = bits.slice(0, dividerIndex)
-  var checksum = bits.slice(dividerIndex)
+  var entropyBits = bits.slice(0, dividerIndex)
+  var checksumBits = bits.slice(dividerIndex)
 
   // calculate the checksum and compare
-  var entropyBytes = entropy.match(/(.{1,8})/g).map(binaryToByte)
-  if (entropy.length % 4 !== 0) throw new Error(INVALID_ENTROPY)
-  var entropyBuffer = new Buffer(entropyBytes)
+  var entropyBytes = entropyBits.match(/(.{1,8})/g).map(binaryToByte)
+  if (entropyBytes.length % 4 !== 0) throw new Error(INVALID_ENTROPY)
 
-  var newChecksum = checksumBits(entropyBuffer)
-  if (newChecksum !== checksum) throw new Error('Invalid mnemonic checksum')
+  var entropy = new Buffer(entropyBytes)
+  var newChecksum = deriveChecksumBits(entropy)
+  if (newChecksum !== checksumBits) throw new Error(INVALID_CHECKSUM)
 
-  return entropyBuffer.toString('hex')
+  return entropy.toString('hex')
 }
 
 function entropyToMnemonic (entropyHex, wordlist) {
@@ -80,9 +99,9 @@ function entropyToMnemonic (entropyHex, wordlist) {
 
   var entropy = new Buffer(entropyHex, 'hex')
   var entropyBits = bytesToBinary([].slice.call(entropy))
-  var checksum = checksumBits(entropy)
+  var checksumBits = deriveChecksumBits(entropy)
 
-  var bits = entropyBits + checksum
+  var bits = entropyBits + checksumBits
   var chunks = bits.match(/(.{1,11})/g)
   var words = chunks.map(function (binary) {
     var index = binaryToByte(binary)
@@ -109,26 +128,6 @@ function validateMnemonic (mnemonic, wordlist) {
   }
 
   return true
-}
-
-function binaryToByte (bin) {
-  return parseInt(bin, 2)
-}
-
-function bytesToBinary (bytes) {
-  return bytes.map(function (x) {
-    return lpad(x.toString(2), '0', 8)
-  }).join('')
-}
-
-function checksumBits (entropyBuffer) {
-  var hash = createHash('sha256').update(entropyBuffer).digest()
-
-  // Calculated constants from BIP39
-  var ENT = entropyBuffer.length * 8
-  var CS = ENT / 32
-
-  return bytesToBinary([].slice.call(hash)).slice(0, CS)
 }
 
 module.exports = {
