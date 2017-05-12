@@ -68,9 +68,6 @@ function mnemonicToEntropy (mnemonic, wordlist) {
     return lpad(index.toString(2), '0', 11)
   }).join('')
 
-  if (bits.length < 128) throw new Error(INVALID_MNEMONIC)
-  if (bits.length > 264) throw new Error(INVALID_MNEMONIC)
-
   // split the binary string into ENT/CS
   var dividerIndex = Math.floor(bits.length / 33) * 32
   var entropyBits = bits.slice(0, dividerIndex)
@@ -78,6 +75,8 @@ function mnemonicToEntropy (mnemonic, wordlist) {
 
   // calculate the checksum and compare
   var entropyBytes = entropyBits.match(/(.{1,8})/g).map(binaryToByte)
+  if (entropyBytes.length < 16) throw new Error(INVALID_ENTROPY)
+  if (entropyBytes.length > 32) throw new Error(INVALID_ENTROPY)
   if (entropyBytes.length % 4 !== 0) throw new Error(INVALID_ENTROPY)
 
   var entropy = new Buffer(entropyBytes)
