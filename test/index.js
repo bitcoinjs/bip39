@@ -63,17 +63,17 @@ test('UTF8 passwords', function (t) {
 })
 
 test('generateMnemonic can vary entropy length', function (t) {
-  var words = bip39.generateMnemonic(96).split(' ')
+  var words = bip39.generateMnemonic(160).split(' ')
 
   t.plan(1)
-  t.equal(words.length, 9, 'can vary generated entropy bit length')
+  t.equal(words.length, 15, 'can vary generated entropy bit length')
 })
 
-test('generateMnemonic only requests the exact amount of data from an RNG', function (t) {
+test('generateMnemonic requests the exact amount of data from an RNG', function (t) {
   t.plan(1)
 
-  bip39.generateMnemonic(96, function (size) {
-    t.equal(size, 96 / 8)
+  bip39.generateMnemonic(160, function (size) {
+    t.equal(size, 160 / 8)
     return new Buffer(size)
   })
 })
