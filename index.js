@@ -145,5 +145,12 @@ module.exports = {
     italian: ITALIAN_WORDLIST,
     japanese: JAPANESE_WORDLIST,
     spanish: SPANISH_WORDLIST
-  }
+  },
+  languages: [
+    'english',
+    'french',
+    'italian',
+    'spanish',
+    'japanese'
+  ]
 }
