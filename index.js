@@ -1,3 +1,4 @@
+var Buffer = require('safe-buffer').Buffer
 var createHash = require('create-hash')
 var pbkdf2 = require('pbkdf2').pbkdf2Sync
 var randomBytes = require('randombytes')
@@ -44,8 +45,8 @@ function salt (password) {
 }
 
 function mnemonicToSeed (mnemonic, password) {
-  var mnemonicBuffer = new Buffer(unorm.nfkd(mnemonic), 'utf8')
-  var saltBuffer = new Buffer(salt(unorm.nfkd(password)), 'utf8')
+  var mnemonicBuffer = Buffer.from(unorm.nfkd(mnemonic), 'utf8')
+  var saltBuffer = Buffer.from(salt(unorm.nfkd(password)), 'utf8')
 
   return pbkdf2(mnemonicBuffer, saltBuffer, 2048, 64, 'sha512')
 }
@@ -79,7 +80,7 @@ function mnemonicToEntropy (mnemonic, wordlist) {
   if (entropyBytes.length > 32) throw new Error(INVALID_ENTROPY)
   if (entropyBytes.length % 4 !== 0) throw new Error(INVALID_ENTROPY)
 
-  var entropy = new Buffer(entropyBytes)
+  var entropy = Buffer.from(entropyBytes)
   var newChecksum = deriveChecksumBits(entropy)
   if (newChecksum !== checksumBits) throw new Error(INVALID_CHECKSUM)
 
@@ -96,7 +97,7 @@ function entropyToMnemonic (entropyHex, wordlist) {
   // multiple of 4
   if (entropyHex.length % 8 !== 0) throw new TypeError(INVALID_ENTROPY)
 
-  var entropy = new Buffer(entropyHex, 'hex')
+  var entropy = Buffer.from(entropyHex, 'hex')
   var entropyBits = bytesToBinary([].slice.call(entropy))
   var checksumBits = deriveChecksumBits(entropy)
 

@@ -1,4 +1,5 @@
 var bip39 = require('../')
+var Buffer = require('safe-buffer').Buffer
 var download = require('../util/wordlists').download
 var WORDLISTS = {
   english: require('../wordlists/english.json'),
@@ -21,7 +22,7 @@ function testVector (description, wordlist, password, v, i) {
     t.equal(bip39.mnemonicToSeedHex(vmnemonic, password), vseedHex, 'mnemonicToSeedHex returns ' + vseedHex.slice(0, 40) + '...')
     t.equal(bip39.entropyToMnemonic(ventropy, wordlist), vmnemonic, 'entropyToMnemonic returns ' + vmnemonic.slice(0, 40) + '...')
 
-    function rng () { return new Buffer(ventropy, 'hex') }
+    function rng () { return Buffer.from(ventropy, 'hex') }
     t.equal(bip39.generateMnemonic(undefined, rng, wordlist), vmnemonic, 'generateMnemonic returns RNG entropy unmodified')
     t.equal(bip39.validateMnemonic(vmnemonic, wordlist), true, 'validateMnemonic returns true')
   })
@@ -35,15 +36,15 @@ test('invalid entropy', function (t) {
   t.plan(3)
 
   t.throws(function () {
-    bip39.entropyToMnemonic(new Buffer('', 'hex'))
+    bip39.entropyToMnemonic(Buffer.from('', 'hex'))
   }, /^TypeError: Invalid entropy$/, 'throws for empty entropy')
 
   t.throws(function () {
-    bip39.entropyToMnemonic(new Buffer('000000', 'hex'))
+    bip39.entropyToMnemonic(Buffer.from('000000', 'hex'))
   }, /^TypeError: Invalid entropy$/, 'throws for entropy that\'s not a multitude of 4 bytes')
 
   t.throws(function () {
-    bip39.entropyToMnemonic(new Buffer(new Array(1028 + 1).join('00'), 'hex'))
+    bip39.entropyToMnemonic(Buffer.from(new Array(1028 + 1).join('00'), 'hex'))
   }, /^TypeError: Invalid entropy$/, 'throws for entropy that is larger than 1024')
 })
 
@@ -74,7 +75,7 @@ test('generateMnemonic requests the exact amount of data from an RNG', function 
 
   bip39.generateMnemonic(160, function (size) {
     t.equal(size, 160 / 8)
-    return new Buffer(size)
+    return Buffer.allocUnsafe(size)
   })
 })
 
