@@ -1,4 +1,5 @@
 var bip39 = require('../')
+var Buffer = require('safe-buffer').Buffer
 var proxyquire = require('proxyquire')
 var test = require('tape')
 
