@@ -12,6 +12,33 @@ var JAPANESE_WORDLIST = require('./wordlists/japanese.json')
 var SPANISH_WORDLIST = require('./wordlists/spanish.json')
 var DEFAULT_WORDLIST = ENGLISH_WORDLIST
 
+var INVALID_MNEMONIC = 'Invalid mnemonic'
+var INVALID_ENTROPY = 'Invalid entropy'
+var INVALID_CHECKSUM = 'Invalid mnemonic checksum'
+
+function lpad (str, padString, length) {
+  while (str.length < length) str = padString + str
+  return str
+}
+
+function binaryToByte (bin) {
+  return parseInt(bin, 2)
+}
+
+function bytesToBinary (bytes) {
+  return bytes.map(function (x) {
+    return lpad(x.toString(2), '0', 8)
+  }).join('')
+}
+
+function deriveChecksumBits (entropyBuffer) {
+  var ENT = entropyBuffer.length * 8
+  var CS = ENT / 32
+  var hash = createHash('sha256').update(entropyBuffer).digest()
+
+  return bytesToBinary([].slice.call(hash)).slice(0, CS)
+}
+
 function salt (password) {
   return 'mnemonic' + (password || '')
 }
@@ -31,57 +58,52 @@ function mnemonicToEntropy (mnemonic, wordlist) {
   wordlist = wordlist || DEFAULT_WORDLIST
 
   var words = unorm.nfkd(mnemonic).split(' ')
-  if (words.length % 3 !== 0) throw new Error('Invalid mnemonic')
-  if (words.some(function (word) {
-    return wordlist.indexOf(word) === -1
-  })) throw new Error('Invalid mnemonic')
+  if (words.length % 3 !== 0) throw new Error(INVALID_MNEMONIC)
 
   // convert word indices to 11 bit binary strings
   var bits = words.map(function (word) {
     var index = wordlist.indexOf(word)
+    if (index === -1) throw new Error(INVALID_MNEMONIC)
+
     return lpad(index.toString(2), '0', 11)
   }).join('')
 
-  // max entropy is 1024; (1024×8)+((1024×8)÷32) = 8448
-  if (bits.length > 8448) {
-    throw new Error('Invalid mnemonic')
-  }
-
   // split the binary string into ENT/CS
   var dividerIndex = Math.floor(bits.length / 33) * 32
-  var entropy = bits.slice(0, dividerIndex)
-  var checksum = bits.slice(dividerIndex)
+  var entropyBits = bits.slice(0, dividerIndex)
+  var checksumBits = bits.slice(dividerIndex)
 
   // calculate the checksum and compare
-  var entropyBytes = entropy.match(/(.{1,8})/g).map(function (bin) {
-    return parseInt(bin, 2)
-  })
-  var entropyBuffer = new Buffer(entropyBytes)
-  var newChecksum = checksumBits(entropyBuffer)
+  var entropyBytes = entropyBits.match(/(.{1,8})/g).map(binaryToByte)
+  if (entropyBytes.length < 16) throw new Error(INVALID_ENTROPY)
+  if (entropyBytes.length > 32) throw new Error(INVALID_ENTROPY)
+  if (entropyBytes.length % 4 !== 0) throw new Error(INVALID_ENTROPY)
 
-  if (newChecksum !== checksum) throw new Error('Invalid mnemonic checksum')
+  var entropy = new Buffer(entropyBytes)
+  var newChecksum = deriveChecksumBits(entropy)
+  if (newChecksum !== checksumBits) throw new Error(INVALID_CHECKSUM)
 
-  return entropyBuffer.toString('hex')
+  return entropy.toString('hex')
 }
 
-function entropyToMnemonic (entropy, wordlist) {
+function entropyToMnemonic (entropyHex, wordlist) {
   wordlist = wordlist || DEFAULT_WORDLIST
 
-  var entropyBuffer = new Buffer(entropy, 'hex')
+  // 128 <= ENT <= 256
+  if (entropyHex.length < 32) throw new TypeError(INVALID_ENTROPY)
+  if (entropyHex.length > 64) throw new TypeError(INVALID_ENTROPY)
 
-  if (entropyBuffer.length === 0 || entropyBuffer.length > 1024 || entropyBuffer.length % 4 !== 0) {
-    throw new Error('Invalid entropy')
-  }
+  // multiple of 4
+  if (entropyHex.length % 8 !== 0) throw new TypeError(INVALID_ENTROPY)
 
-  var entropyBits = bytesToBinary([].slice.call(entropyBuffer))
-  var checksum = checksumBits(entropyBuffer)
+  var entropy = new Buffer(entropyHex, 'hex')
+  var entropyBits = bytesToBinary([].slice.call(entropy))
+  var checksumBits = deriveChecksumBits(entropy)
 
-  var bits = entropyBits + checksum
+  var bits = entropyBits + checksumBits
   var chunks = bits.match(/(.{1,11})/g)
-
   var words = chunks.map(function (binary) {
-    var index = parseInt(binary, 2)
-
+    var index = binaryToByte(binary)
     return wordlist[index]
   })
 
@@ -90,6 +112,7 @@ function entropyToMnemonic (entropy, wordlist) {
 
 function generateMnemonic (strength, rng, wordlist) {
   strength = strength || 128
+  if (strength % 32 !== 0) throw new TypeError(INVALID_ENTROPY)
   rng = rng || randomBytes
 
   var hex = rng(strength / 8).toString('hex')
@@ -104,29 +127,6 @@ function validateMnemonic (mnemonic, wordlist) {
   }
 
   return true
-}
-
-function checksumBits (entropyBuffer) {
-  var hash = createHash('sha256').update(entropyBuffer).digest()
-
-  // Calculated constants from BIP39
-  var ENT = entropyBuffer.length * 8
-  var CS = ENT / 32
-
-  return bytesToBinary([].slice.call(hash)).slice(0, CS)
-}
-
-// =========== helper methods from bitcoinjs-lib ========
-
-function bytesToBinary (bytes) {
-  return bytes.map(function (x) {
-    return lpad(x.toString(2), '0', 8)
-  }).join('')
-}
-
-function lpad (str, padString, length) {
-  while (str.length < length) str = padString + str
-  return str
 }
 
 module.exports = {

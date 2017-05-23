@@ -1,5 +1,4 @@
 var bip39 = require('../')
-var proxyquire = require('proxyquire')
 var download = require('../util/wordlists').download
 var WORDLISTS = {
   english: require('../wordlists/english.json'),
@@ -15,7 +14,7 @@ function testVector (description, wordlist, password, v, i) {
   var vmnemonic = v[1]
   var vseedHex = v[2]
 
-  test('for ' + description + ' test vector ' + i, function (t) {
+  test('for ' + description + '(' + i + '), ' + ventropy, function (t) {
     t.plan(5)
 
     t.equal(bip39.mnemonicToEntropy(vmnemonic, wordlist), ventropy, 'mnemonicToEntropy returns ' + ventropy.slice(0, 40) + '...')
@@ -37,15 +36,15 @@ test('invalid entropy', function (t) {
 
   t.throws(function () {
     bip39.entropyToMnemonic(new Buffer('', 'hex'))
-  }, /^Invalid entropy$/, 'throws for empty entropy')
+  }, /^TypeError: Invalid entropy$/, 'throws for empty entropy')
 
   t.throws(function () {
     bip39.entropyToMnemonic(new Buffer('000000', 'hex'))
-  }, /^Invalid entropy$/, 'throws for entropy that\'s not a multitude of 4 bytes')
+  }, /^TypeError: Invalid entropy$/, 'throws for entropy that\'s not a multitude of 4 bytes')
 
   t.throws(function () {
     bip39.entropyToMnemonic(new Buffer(new Array(1028 + 1).join('00'), 'hex'))
-  }, /^Invalid entropy$/, 'throws for entropy that is larger than 1024')
+  }, /^TypeError: Invalid entropy$/, 'throws for entropy that is larger than 1024')
 })
 
 test('UTF8 passwords', function (t) {
@@ -63,57 +62,18 @@ test('UTF8 passwords', function (t) {
   })
 })
 
-test('README example 1', function (t) {
-  // defaults to BIP39 English word list
-  var entropy = '133755ff'
-  var mnemonic = bip39.entropyToMnemonic(entropy)
-
-  t.plan(2)
-  t.equal(mnemonic, 'basket rival lemon')
-
-  // reversible
-  t.equal(bip39.mnemonicToEntropy(mnemonic), entropy)
-})
-
-test('README example 2', function (t) {
-  var stub = {
-    randombytes: function (size) {
-      return new Buffer('qwertyuiopasdfghjklzxcvbnm[];,./'.slice(0, size))
-    }
-  }
-  var proxiedbip39 = proxyquire('../', stub)
-
-  // mnemonic strength defaults to 128 bits
-  var mnemonic = proxiedbip39.generateMnemonic()
-
-  t.plan(2)
-  t.equal(mnemonic, 'imitate robot frame trophy nuclear regret saddle around inflict case oil spice')
-  t.equal(bip39.validateMnemonic(mnemonic), true)
-})
-
-test('README example 3', function (t) {
-  var mnemonic = 'basket actual'
-  var seed = bip39.mnemonicToSeed(mnemonic)
-  var seedHex = bip39.mnemonicToSeedHex(mnemonic)
-
-  t.plan(3)
-  t.equal(seed.toString('hex'), seedHex)
-  t.equal(seedHex, '5cf2d4a8b0355e90295bdfc565a022a409af063d5365bb57bf74d9528f494bfa4400f53d8349b80fdae44082d7f9541e1dba2b003bcfec9d0d53781ca676651f')
-  t.equal(bip39.validateMnemonic(mnemonic), false)
-})
-
 test('generateMnemonic can vary entropy length', function (t) {
-  var words = bip39.generateMnemonic(96).split(' ')
+  var words = bip39.generateMnemonic(160).split(' ')
 
   t.plan(1)
-  t.equal(words.length, 9, 'can vary generated entropy bit length')
+  t.equal(words.length, 15, 'can vary generated entropy bit length')
 })
 
-test('generateMnemonic only requests the exact amount of data from an RNG', function (t) {
+test('generateMnemonic requests the exact amount of data from an RNG', function (t) {
   t.plan(1)
 
-  bip39.generateMnemonic(96, function (size) {
-    t.equal(size, 96 / 8)
+  bip39.generateMnemonic(160, function (size) {
+    t.equal(size, 160 / 8)
     return new Buffer(size)
   })
 })
