@@ -45,6 +45,10 @@ var bip39 = require('bip39')
 var mnemonic = bip39.entropyToMnemonic('00000000000000000000000000000000')
 // => zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo wrong
 
+// pass target language word list as second argument
+bip39.entropyToMnemonic('00000000000000000000000000000000', bip39.chinese_simplified)
+// => 的 的 的 的 的 的 的 的 的 的 的 在
+
 // reversible
 bip39.mnemonicToEntropy(mnemonic)
 // => '133755ff'

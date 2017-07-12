@@ -11,6 +11,8 @@ var FRENCH_WORDLIST = require('./wordlists/french.json')
 var ITALIAN_WORDLIST = require('./wordlists/italian.json')
 var JAPANESE_WORDLIST = require('./wordlists/japanese.json')
 var SPANISH_WORDLIST = require('./wordlists/spanish.json')
+var CHINESE_SIMPLIFIED_WORDLIST = require('./wordlists/chinese_simplified.json')
+var CHINESE_TRADITIONAL_WORDLIST = require('./wordlists/chinese_traditional.json')
 var DEFAULT_WORDLIST = ENGLISH_WORDLIST
 
 var INVALID_MNEMONIC = 'Invalid mnemonic'
@@ -141,6 +143,8 @@ module.exports = {
     EN: ENGLISH_WORDLIST,
     JA: JAPANESE_WORDLIST,
 
+    chinese_simplified: CHINESE_SIMPLIFIED_WORDLIST,
+    chinese_traditional: CHINESE_TRADITIONAL_WORDLIST,
     english: ENGLISH_WORDLIST,
     french: FRENCH_WORDLIST,
     italian: ITALIAN_WORDLIST,

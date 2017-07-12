@@ -3,7 +3,15 @@ var fs = require('fs')
 var path = require('path')
 
 var log = console.log
-var WORDLISTS = ['english', 'french', 'italian', 'japanese', 'spanish']
+var WORDLISTS = [
+  'english',
+  'french',
+  'italian',
+  'japanese',
+  'spanish',
+  'chinese_simplified',
+  'chinese_traditional'
+]
 
 function update () {
   download().then(function (wordlists) {
