@@ -1,4 +1,4 @@
-[
+module.exports = [
   "abandon",
   "ability",
   "able",
@@ -2047,4 +2047,4 @@
   "zero",
   "zone",
   "zoo"
-]
+];
