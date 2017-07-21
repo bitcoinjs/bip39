@@ -1,4 +1,4 @@
-[
+module.exports = [
   "abaco",
   "abbaglio",
   "abbinato",
@@ -2047,4 +2047,4 @@
   "zufolo",
   "zulu",
   "zuppa"
-]
+];

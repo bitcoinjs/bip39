@@ -1,4 +1,4 @@
-[
+module.exports = [
   "abaisser",
   "abandon",
   "abdiquer",
@@ -2047,4 +2047,4 @@
   "zénith",
   "zeste",
   "zoologie"
-]
+];
