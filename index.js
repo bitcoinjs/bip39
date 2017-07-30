@@ -6,6 +6,8 @@ var randomBytes = require('randombytes')
 // use unorm until String.prototype.normalize gets better browser support
 var unorm = require('unorm')
 
+var CHINESE_SIMPLIFIED_WORDLIST = require('./wordlists/chinese_simplified.json')
+var CHINESE_TRADITIONAL_WORDLIST = require('./wordlists/chinese_traditional.json')
 var ENGLISH_WORDLIST = require('./wordlists/english.json')
 var FRENCH_WORDLIST = require('./wordlists/french.json')
 var ITALIAN_WORDLIST = require('./wordlists/italian.json')
@@ -141,6 +143,8 @@ module.exports = {
     EN: ENGLISH_WORDLIST,
     JA: JAPANESE_WORDLIST,
 
+    chinese_simplified: CHINESE_SIMPLIFIED_WORDLIST,
+    chinese_traditional: CHINESE_TRADITIONAL_WORDLIST,
     english: ENGLISH_WORDLIST,
     french: FRENCH_WORDLIST,
     italian: ITALIAN_WORDLIST,
