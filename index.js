@@ -89,17 +89,15 @@ function mnemonicToEntropy (mnemonic, wordlist) {
   return entropy.toString('hex')
 }
 
-function entropyToMnemonic (entropyHex, wordlist) {
+function entropyToMnemonic (entropy, wordlist) {
+  if (!Buffer.isBuffer(entropy)) entropy = Buffer.from(entropy, 'hex')
   wordlist = wordlist || DEFAULT_WORDLIST
 
   // 128 <= ENT <= 256
-  if (entropyHex.length < 32) throw new TypeError(INVALID_ENTROPY)
-  if (entropyHex.length > 64) throw new TypeError(INVALID_ENTROPY)
+  if (entropy.length < 16) throw new TypeError(INVALID_ENTROPY)
+  if (entropy.length > 32) throw new TypeError(INVALID_ENTROPY)
+  if (entropy.length % 4 !== 0) throw new TypeError(INVALID_ENTROPY)
 
-  // multiple of 4
-  if (entropyHex.length % 8 !== 0) throw new TypeError(INVALID_ENTROPY)
-
-  var entropy = Buffer.from(entropyHex, 'hex')
   var entropyBits = bytesToBinary([].slice.call(entropy))
   var checksumBits = deriveChecksumBits(entropy)
 
@@ -118,8 +116,7 @@ function generateMnemonic (strength, rng, wordlist) {
   if (strength % 32 !== 0) throw new TypeError(INVALID_ENTROPY)
   rng = rng || randomBytes
 
-  var hex = rng(strength / 8).toString('hex')
-  return entropyToMnemonic(hex, wordlist)
+  return entropyToMnemonic(rng(strength / 8), wordlist)
 }
 
 function validateMnemonic (mnemonic, wordlist) {
