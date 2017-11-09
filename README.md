@@ -43,9 +43,9 @@ var bip39 = require('bip39')
 // defaults to BIP39 English word list
 // uses HEX strings for entropy
 var mnemonic = bip39.entropyToMnemonic('00000000000000000000000000000000')
-// => zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo wrong
+// => abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about
 
 // reversible
 bip39.mnemonicToEntropy(mnemonic)
-// => '133755ff'
+// => '00000000000000000000000000000000'
 ```
