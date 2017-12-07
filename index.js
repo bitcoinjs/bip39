@@ -34,6 +34,19 @@ function bytesToBinary (bytes) {
   }).join('')
 }
 
+function mnemonicToBits (mnemonic, wordlist) {
+  var words = unorm.nfkd(mnemonic).split(' ')
+  if (words.length % 3 !== 0) throw new Error(INVALID_MNEMONIC)
+
+  // convert word indices to 11 bit binary strings
+  return words.map(function (word) {
+    var index = wordlist.indexOf(word)
+    if (index === -1) throw new Error(INVALID_MNEMONIC)
+
+    return lpad(index.toString(2), '0', 11)
+  }).join('')
+}
+
 function deriveChecksumBits (entropyBuffer) {
   var ENT = entropyBuffer.length * 8
   var CS = ENT / 32
@@ -58,18 +71,8 @@ function mnemonicToSeedHex (mnemonic, password) {
 }
 
 function mnemonicToEntropy (mnemonic, wordlist) {
-  wordlist = wordlist || DEFAULT_WORDLIST
-
-  var words = unorm.nfkd(mnemonic).split(' ')
-  if (words.length % 3 !== 0) throw new Error(INVALID_MNEMONIC)
-
-  // convert word indices to 11 bit binary strings
-  var bits = words.map(function (word) {
-    var index = wordlist.indexOf(word)
-    if (index === -1) throw new Error(INVALID_MNEMONIC)
-
-    return lpad(index.toString(2), '0', 11)
-  }).join('')
+  // convert mnemonic into binary string, mapping each word into 11 bits
+  var bits = mnemonicToBits(mnemonic, wordlist || DEFAULT_WORDLIST)
 
   // split the binary string into ENT/CS
   var dividerIndex = Math.floor(bits.length / 33) * 32
@@ -87,6 +90,19 @@ function mnemonicToEntropy (mnemonic, wordlist) {
   if (newChecksum !== checksumBits) throw new Error(INVALID_CHECKSUM)
 
   return entropy.toString('hex')
+}
+
+function fixMnemonicChecksum (mnemonic, wordlist) {
+  // convert mnemonic into binary string, mapping each word into 11 bits
+  var bits = mnemonicToBits(mnemonic, wordlist || DEFAULT_WORDLIST)
+
+  // get the ENT part of binary string
+  var dividerIndex = Math.floor(bits.length / 33) * 32
+  var entropyBits = bits.slice(0, dividerIndex)
+  var entropyBytes = entropyBits.match(/(.{1,8})/g).map(binaryToByte)
+
+  // calculate mnemonic for given entropy
+  return entropyToMnemonic(Buffer.from(entropyBytes), wordlist || DEFAULT_WORDLIST)
 }
 
 function entropyToMnemonic (entropy, wordlist) {
@@ -136,6 +152,7 @@ module.exports = {
   entropyToMnemonic: entropyToMnemonic,
   generateMnemonic: generateMnemonic,
   validateMnemonic: validateMnemonic,
+  fixMnemonicChecksum: fixMnemonicChecksum,
   wordlists: {
     EN: ENGLISH_WORDLIST,
     JA: JAPANESE_WORDLIST,

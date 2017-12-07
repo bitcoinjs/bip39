@@ -89,6 +89,42 @@ test('validateMnemonic', function (t) {
   t.equal(bip39.validateMnemonic('sleep kitten sleep kitten sleep kitten sleep kitten sleep kitten sleep kitten'), false, 'fails for invalid checksum')
 })
 
+test('fixMnemonicChecksum', function (t) {
+  t.plan(7)
+
+  var fixedMnemonic = bip39.fixMnemonicChecksum('sleep kitten sleep kitten sleep kitten sleep kitten sleep kitten sleep kitten')
+
+  t.equal(fixedMnemonic, 'sleep kitten sleep kitten sleep kitten sleep kitten sleep kitten sleep kid', 'fixes mnemonic')
+  t.equal(bip39.validateMnemonic(fixedMnemonic), true, 'fixed mnemonic passes validity check')
+  t.equal(bip39.fixMnemonicChecksum(fixedMnemonic), fixedMnemonic, 'does nothing with an already valid mnemonic')
+
+  t.throws(function () {
+    bip39.fixMnemonicChecksum('sleep kitten')
+  }, /^Error: Invalid mnemonic$/, 'fails for a mnemonic that is too short')
+
+  t.throws(function () {
+    bip39.fixMnemonicChecksum('sleep kitten sleep kitten sleep kitten')
+  }, /^TypeError: Invalid entropy$/, 'fails for a mnemonic that is too short')
+
+  t.throws(function () {
+    bip39.fixMnemonicChecksum('abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about end grace oxygen maze bright face loan ticket trial leg cruel lizard bread worry reject journey perfect chef section caught neither install industry')
+  }, /^TypeError: Invalid entropy$/, 'fails for a mnemonic that is too long')
+
+  t.throws(function () {
+    bip39.fixMnemonicChecksum('turtle front uncle idea crush write shrug there lottery flower risky shell')
+  }, /^Error: Invalid mnemonic$/, 'fails if mnemonic words are not in the word list')
+})
+
+test('fixMnemonicChecksum with non-default wordlist', function (t) {
+  t.plan(3)
+
+  var fixedMnemonic = bip39.fixMnemonicChecksum('あいさつ あいさつ あいさつ あいさつ あいさつ あいさつ あいさつ あいさつ あいさつ あいさつ あいさつ あいさつ', bip39.wordlists.japanese)
+
+  t.equal(fixedMnemonic, 'あいさつ　あいさつ　あいさつ　あいさつ　あいさつ　あいさつ　あいさつ　あいさつ　あいさつ　あいさつ　あいさつ　あそぶ', 'fixes mnemonic')
+  t.equal(bip39.validateMnemonic(fixedMnemonic, bip39.wordlists.japanese), true, 'fixed mnemonic passes validity check')
+  t.equal(bip39.fixMnemonicChecksum(fixedMnemonic, bip39.wordlists.japanese), fixedMnemonic, 'does nothing with an already valid mnemonic')
+})
+
 test('exposes standard wordlists', function (t) {
   t.plan(2)
   t.same(bip39.wordlists.EN, WORDLISTS.english)
