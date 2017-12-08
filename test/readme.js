@@ -41,3 +41,13 @@ test('README example 3', function (t) {
   t.equal(seedHex, '5cf2d4a8b0355e90295bdfc565a022a409af063d5365bb57bf74d9528f494bfa4400f53d8349b80fdae44082d7f9541e1dba2b003bcfec9d0d53781ca676651f')
   t.equal(bip39.validateMnemonic(mnemonic), false)
 })
+
+test('README example 4', function (t) {
+  var mnemonic = 'add add add add add add add add add add add add'
+  var fixedMnemonic = bip39.fixMnemonicChecksum(mnemonic)
+
+  t.plan(3)
+  t.equal(bip39.validateMnemonic(mnemonic), false)
+  t.equal(fixedMnemonic, 'add add add add add add add add add add add actor')
+  t.equal(bip39.validateMnemonic(fixedMnemonic), true)
+})

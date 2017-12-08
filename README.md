@@ -34,6 +34,13 @@ bip39.validateMnemonic(mnemonic)
 
 bip39.validateMnemonic('basket actual')
 // => false
+
+bip39.validateMnemonic('add add add add add add add add add add add add')
+// => false
+bip39.fixMnemonicChecksum('add add add add add add add add add add add add')
+// => add add add add add add add add add add add actor
+bip39.validateMnemonic('add add add add add add add add add add add actor')
+// => true
 ```
 
 
