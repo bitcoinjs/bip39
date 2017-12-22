@@ -10,7 +10,8 @@ var WORDLISTS = [
   'french',
   'italian',
   'japanese',
-  'spanish'
+  'spanish',
+  'korean'
 ]
 
 function update () {
