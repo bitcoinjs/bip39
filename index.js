@@ -1,4 +1,3 @@
-var assert = require('assert')
 var Buffer = require('safe-buffer').Buffer
 var pbkdf2 = require('react-native-crypto').pbkdf2Sync
 var createHash = require('react-native-crypto').createHash
