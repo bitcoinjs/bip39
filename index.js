@@ -1,7 +1,8 @@
+var assert = require('assert')
 var Buffer = require('safe-buffer').Buffer
-var createHash = require('create-hash')
-var pbkdf2 = require('pbkdf2').pbkdf2Sync
-var randomBytes = require('randombytes')
+var pbkdf2 = require('react-native-crypto').pbkdf2Sync
+var createHash = require('react-native-crypto').createHash
+var randomBytes = require('react-native-randombytes').randomBytes
 
 // use unorm until String.prototype.normalize gets better browser support
 var unorm = require('unorm')
@@ -113,11 +114,15 @@ function entropyToMnemonic (entropy, wordlist) {
 }
 
 function generateMnemonic (strength, rng, wordlist) {
-  strength = strength || 128
-  if (strength % 32 !== 0) throw new TypeError(INVALID_ENTROPY)
-  rng = rng || randomBytes
-
-  return entropyToMnemonic(rng(strength / 8), wordlist)
+  return new Promise((resolve, reject) => {
+    strength = strength || 128
+    if (strength % 32 !== 0) reject(new TypeError(INVALID_ENTROPY))
+    rng = rng || randomBytes  
+    rng(strength / 8, (err, result) => {
+      if (!err) resolve(entropyToMnemonic(result.toString('hex'), wordlist)
+      else reject(err)
+    }) 
+  })
 }
 
 function validateMnemonic (mnemonic, wordlist) {
@@ -140,7 +145,6 @@ module.exports = {
   wordlists: {
     EN: ENGLISH_WORDLIST,
     JA: JAPANESE_WORDLIST,
-
     chinese_simplified: CHINESE_SIMPLIFIED_WORDLIST,
     chinese_traditional: CHINESE_TRADITIONAL_WORDLIST,
     english: ENGLISH_WORDLIST,
