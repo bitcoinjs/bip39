@@ -118,7 +118,7 @@ function generateMnemonic (strength, rng, wordlist) {
     if (strength % 32 !== 0) reject(new TypeError(INVALID_ENTROPY))
     rng = rng || randomBytes  
     rng(strength / 8, (err, result) => {
-      if (!err) resolve(entropyToMnemonic(result.toString('hex'), wordlist)
+      if (!err) resolve(entropyToMnemonic(result.toString('hex'), wordlist))
       else reject(err)
     }) 
   })
