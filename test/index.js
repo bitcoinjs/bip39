@@ -17,11 +17,12 @@ function testVector (description, wordlist, password, v, i) {
   test('for ' + description + '(' + i + '), ' + ventropy, function (t) {
     t.plan(5)
 
-    t.equal(bip39.mnemonicToEntropy(vmnemonic, wordlist), ventropy, 'mnemonicToEntropy returns ' + ventropy.slice(0, 40) + '...')
-    t.equal(bip39.mnemonicToSeedHex(vmnemonic, password), vseedHex, 'mnemonicToSeedHex returns ' + vseedHex.slice(0, 40) + '...')
-    t.equal(bip39.entropyToMnemonic(ventropy, wordlist), vmnemonic, 'entropyToMnemonic returns ' + vmnemonic.slice(0, 40) + '...')
+    let entropy = Buffer.from(ventropy, 'hex')
+    t.equal(bip39.mnemonicToEntropy(vmnemonic, wordlist).toString('hex'), ventropy, 'mnemonicToEntropy returns ' + ventropy.slice(0, 40) + '...')
+    t.equal(bip39.mnemonicToSeed(vmnemonic, password).toString('hex'), vseedHex, 'mnemonicToSeed returns ' + vseedHex.slice(0, 40) + '...')
+    t.equal(bip39.entropyToMnemonic(entropy, wordlist), vmnemonic, 'entropyToMnemonic returns ' + vmnemonic.slice(0, 40) + '...')
 
-    function rng () { return Buffer.from(ventropy, 'hex') }
+    function rng () { return entropy }
     t.equal(bip39.generateMnemonic(undefined, rng, wordlist), vmnemonic, 'generateMnemonic returns RNG entropy unmodified')
     t.equal(bip39.validateMnemonic(vmnemonic, wordlist), true, 'validateMnemonic returns true')
   })
@@ -57,8 +58,8 @@ test('UTF8 passwords', function (t) {
     var password = '㍍ガバヴァぱばぐゞちぢ十人十色'
     var normalizedPassword = 'メートルガバヴァぱばぐゞちぢ十人十色'
 
-    t.equal(bip39.mnemonicToSeedHex(vmnemonic, password), vseedHex, 'mnemonicToSeedHex normalizes passwords')
-    t.equal(bip39.mnemonicToSeedHex(vmnemonic, normalizedPassword), vseedHex, 'mnemonicToSeedHex leaves normalizes passwords as-is')
+    t.equal(bip39.mnemonicToSeed(vmnemonic, password).toString('hex'), vseedHex, 'mnemonicToSeedHex normalizes passwords')
+    t.equal(bip39.mnemonicToSeed(vmnemonic, normalizedPassword).toString('hex'), vseedHex, 'mnemonicToSeedHex leaves normalizes passwords as-is')
   })
 })
 

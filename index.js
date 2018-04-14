@@ -54,15 +54,10 @@ function mnemonicToSeed (mnemonic, password) {
   return pbkdf2(mnemonicBuffer, saltBuffer, 2048, 64, 'sha512')
 }
 
-function mnemonicToSeedHex (mnemonic, password) {
-  return mnemonicToSeed(mnemonic, password).toString('hex')
-}
-
 function mnemonicToEntropy (mnemonic, wordlist) {
   wordlist = wordlist || DEFAULT_WORDLIST
 
   var words = mnemonic.split(wordlist.separator)
-
   if (words.length % 3 !== 0) throw new Error(INVALID_MNEMONIC)
 
   // convert word indices to 11 bit binary strings
@@ -88,11 +83,11 @@ function mnemonicToEntropy (mnemonic, wordlist) {
   var newChecksum = deriveChecksumBits(entropy)
   if (newChecksum !== checksumBits) throw new Error(INVALID_CHECKSUM)
 
-  return entropy.toString('hex')
+  return entropy
 }
 
 function entropyToMnemonic (entropy, wordlist) {
-  if (!Buffer.isBuffer(entropy)) entropy = Buffer.from(entropy, 'hex')
+  if (!Buffer.isBuffer(entropy)) throw new TypeError('Expected Buffer, got ' + entropy)
   wordlist = wordlist || DEFAULT_WORDLIST
 
   // 128 <= ENT <= 256
@@ -133,7 +128,6 @@ function validateMnemonic (mnemonic, wordlist) {
 
 module.exports = {
   mnemonicToSeed: mnemonicToSeed,
-  mnemonicToSeedHex: mnemonicToSeedHex,
   mnemonicToEntropy: mnemonicToEntropy,
   entropyToMnemonic: entropyToMnemonic,
   generateMnemonic: generateMnemonic,
