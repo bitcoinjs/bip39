@@ -61,12 +61,13 @@ function mnemonicToSeedHex (mnemonic, password) {
 function mnemonicToEntropy (mnemonic, wordlist) {
   wordlist = wordlist || DEFAULT_WORDLIST
 
-  var words = unorm.nfkd(mnemonic).split(' ')
+  var words = mnemonic.split(wordlist.separator)
+
   if (words.length % 3 !== 0) throw new Error(INVALID_MNEMONIC)
 
   // convert word indices to 11 bit binary strings
   var bits = words.map(function (word) {
-    var index = wordlist.indexOf(word)
+    var index = wordlist.words.indexOf(word)
     if (index === -1) throw new Error(INVALID_MNEMONIC)
 
     return lpad(index.toString(2), '0', 11)
@@ -106,10 +107,10 @@ function entropyToMnemonic (entropy, wordlist) {
   var chunks = bits.match(/(.{1,11})/g)
   var words = chunks.map(function (binary) {
     var index = binaryToByte(binary)
-    return wordlist[index]
+    return wordlist.words[index]
   })
 
-  return wordlist === JAPANESE_WORDLIST ? words.join('\u3000') : words.join(' ')
+  return words.join(wordlist.separator)
 }
 
 function generateMnemonic (strength, rng, wordlist) {

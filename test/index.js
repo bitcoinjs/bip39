@@ -1,13 +1,12 @@
 var bip39 = require('../')
 var Buffer = require('safe-buffer').Buffer
-var download = require('../util/wordlists').download
 var WORDLISTS = {
   english: require('../wordlists/english.json'),
   japanese: require('../wordlists/japanese.json'),
   custom: require('./wordlist.json')
 }
 
-var vectors = require('./vectors.json')
+var fixtures = require('./fixtures.json')
 var test = require('tape')
 
 function testVector (description, wordlist, password, v, i) {
@@ -28,9 +27,9 @@ function testVector (description, wordlist, password, v, i) {
   })
 }
 
-vectors.english.forEach(function (v, i) { testVector('English', undefined, 'TREZOR', v, i) })
-vectors.japanese.forEach(function (v, i) { testVector('Japanese', WORDLISTS.japanese, '㍍ガバヴァぱばぐゞちぢ十人十色', v, i) })
-vectors.custom.forEach(function (v, i) { testVector('Custom', WORDLISTS.custom, undefined, v, i) })
+fixtures.english.forEach(function (v, i) { testVector('English', undefined, 'TREZOR', v, i) })
+fixtures.japanese.forEach(function (v, i) { testVector('Japanese', WORDLISTS.japanese, '㍍ガバヴァぱばぐゞちぢ十人十色', v, i) })
+fixtures.custom.forEach(function (v, i) { testVector('Custom', WORDLISTS.custom, undefined, v, i) })
 
 test('invalid entropy', function (t) {
   t.plan(3)
@@ -49,9 +48,9 @@ test('invalid entropy', function (t) {
 })
 
 test('UTF8 passwords', function (t) {
-  t.plan(vectors.japanese.length * 2)
+  t.plan(fixtures.japanese.length * 2)
 
-  vectors.japanese.forEach(function (v) {
+  fixtures.japanese.forEach(function (v) {
     var vmnemonic = v[1]
     var vseedHex = v[2]
 
@@ -92,15 +91,5 @@ test('validateMnemonic', function (t) {
 test('exposes standard wordlists', function (t) {
   t.plan(2)
   t.same(bip39.wordlists.EN, WORDLISTS.english)
-  t.equal(bip39.wordlists.EN.length, 2048)
-})
-
-test('verify wordlists from https://github.com/bitcoin/bips/blob/master/bip-0039/bip-0039-wordlists.md', function (t) {
-  download().then(function (wordlists) {
-    Object.keys(wordlists).forEach(function (name) {
-      t.same(bip39.wordlists[name], wordlists[name])
-    })
-
-    t.end()
-  })
+  t.equal(bip39.wordlists.EN.words.length, 2048)
 })
