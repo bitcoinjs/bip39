@@ -1,3 +1,4 @@
+var Buffer = require('safe-buffer').Buffer
 var DEFAULT_WORDLIST = require('./wordlists/english.json')
 var JAPANESE_WORDLIST = require('./wordlists/japanese.json')
 var ErrorConstants = require('./constants/ErrorConstants')
