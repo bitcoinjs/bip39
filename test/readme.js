@@ -21,10 +21,10 @@ test('README example 2', function (t) {
       return new Buffer('qwertyuiopasdfghjklzxcvbnm[];,./'.slice(0, size))
     }
   }
-  var proxiedbip39 = proxyquire('../', stub)
+  var proxiedGenerateMnemonic = proxyquire('../src/generateMnemonic', stub)
 
   // mnemonic strength defaults to 128 bits
-  var mnemonic = proxiedbip39.generateMnemonic()
+  var mnemonic = proxiedGenerateMnemonic()
 
   t.plan(2)
   t.equal(mnemonic, 'imitate robot frame trophy nuclear regret saddle around inflict case oil spice')
