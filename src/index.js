@@ -1,7 +1,8 @@
 var Buffer = require('safe-buffer').Buffer
 var createHash = require('create-hash')
 var pbkdf2 = require('pbkdf2').pbkdf2Sync
-var randomBytes = require('randombytes')
+var entropyToMnemonic = require('./entropyToMnemonic')
+var generateMnemonic = require('./generateMnemonic')
 
 // use unorm until String.prototype.normalize gets better browser support
 var unorm = require('unorm')
@@ -88,36 +89,6 @@ function mnemonicToEntropy (mnemonic, wordlist) {
   if (newChecksum !== checksumBits) throw new Error(INVALID_CHECKSUM)
 
   return entropy.toString('hex')
-}
-
-function entropyToMnemonic (entropy, wordlist) {
-  if (!Buffer.isBuffer(entropy)) entropy = Buffer.from(entropy, 'hex')
-  wordlist = wordlist || DEFAULT_WORDLIST
-
-  // 128 <= ENT <= 256
-  if (entropy.length < 16) throw new TypeError(INVALID_ENTROPY)
-  if (entropy.length > 32) throw new TypeError(INVALID_ENTROPY)
-  if (entropy.length % 4 !== 0) throw new TypeError(INVALID_ENTROPY)
-
-  var entropyBits = bytesToBinary([].slice.call(entropy))
-  var checksumBits = deriveChecksumBits(entropy)
-
-  var bits = entropyBits + checksumBits
-  var chunks = bits.match(/(.{1,11})/g)
-  var words = chunks.map(function (binary) {
-    var index = binaryToByte(binary)
-    return wordlist[index]
-  })
-
-  return wordlist === JAPANESE_WORDLIST ? words.join('\u3000') : words.join(' ')
-}
-
-function generateMnemonic (strength, rng, wordlist) {
-  strength = strength || 128
-  if (strength % 32 !== 0) throw new TypeError(INVALID_ENTROPY)
-  rng = rng || randomBytes
-
-  return entropyToMnemonic(rng(strength / 8), wordlist)
 }
 
 function validateMnemonic (mnemonic, wordlist) {
