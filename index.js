@@ -150,6 +150,6 @@ module.exports = {
     japanese: JAPANESE_WORDLIST,
     korean: KOREAN_WORDLIST,
     spanish: SPANISH_WORDLIST,
-	russian: RUSSIAN_WORDLIST
+    russian: RUSSIAN_WORDLIST
   }
 }
