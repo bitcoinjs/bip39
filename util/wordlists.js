@@ -11,7 +11,8 @@ var WORDLISTS = [
   'italian',
   'japanese',
   'spanish',
-  'korean'
+  'korean',
+  'russian'
 ]
 
 function update () {
