@@ -14,6 +14,7 @@ var ITALIAN_WORDLIST = require('./wordlists/italian.json')
 var JAPANESE_WORDLIST = require('./wordlists/japanese.json')
 var KOREAN_WORDLIST = require('./wordlists/korean.json')
 var SPANISH_WORDLIST = require('./wordlists/spanish.json')
+var RUSSIAN_WORDLIST = require('./wordlists/russian.json')
 var DEFAULT_WORDLIST = ENGLISH_WORDLIST
 
 var INVALID_MNEMONIC = 'Invalid mnemonic'
@@ -148,6 +149,7 @@ module.exports = {
     italian: ITALIAN_WORDLIST,
     japanese: JAPANESE_WORDLIST,
     korean: KOREAN_WORDLIST,
-    spanish: SPANISH_WORDLIST
+    spanish: SPANISH_WORDLIST,
+	russian: RUSSIAN_WORDLIST
   }
 }
