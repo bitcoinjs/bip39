@@ -29,6 +29,9 @@ bip39.mnemonicToSeedHex('basket actual')
 bip39.mnemonicToSeed('basket actual')
 // => <Buffer 5c f2 d4 a8 b0 35 5e 90 29 5b df c5 65 a0 22 a4 09 af 06 3d 53 65 bb 57 bf 74 d9 52 8f 49 4b fa 44 00 f5 3d 83 49 b8 0f da e4 40 82 d7 f9 54 1e 1d ba 2b ...>
 
+bip39.mnemonicToSeed('basket actual', 'a password')
+// => <Buffer 46 16 a4 4f 2c 90 b9 69 02 14 b8 fd 43 5b b4 14 62 43 de 10 7b 30 87 59 0a 3b b8 d3 1b 2f 3a ef ab 1d 4b 52 6d 21 e5 0a 04 02 3d 7a d0 66 43 ea 68 3b ... >
+
 bip39.validateMnemonic(mnemonic)
 // => true
 
