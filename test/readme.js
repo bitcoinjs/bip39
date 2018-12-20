@@ -18,7 +18,7 @@ test('README example 1', function (t) {
 test('README example 2', function (t) {
   var stub = {
     randombytes: function (size) {
-      return new Buffer('qwertyuiopasdfghjklzxcvbnm[];,./'.slice(0, size))
+      return Buffer.from('qwertyuiopasdfghjklzxcvbnm[];,./'.slice(0, size), 'utf8')
     }
   }
   var proxiedbip39 = proxyquire('../', stub)
