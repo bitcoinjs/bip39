@@ -98,7 +98,8 @@ test('exposes standard wordlists', function (t) {
 test('verify wordlists from https://github.com/bitcoin/bips/blob/master/bip-0039/bip-0039-wordlists.md', function (t) {
   download().then(function (wordlists) {
     Object.keys(wordlists).forEach(function (name) {
-      t.same(bip39.wordlists[name], wordlists[name])
+      var wordlist = bip39.wordlists[name]
+      t.same(wordlist, wordlists[name])
     })
 
     t.end()
