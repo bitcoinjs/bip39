@@ -6,9 +6,9 @@ var randomBytes = require('randombytes')
 // use unorm until String.prototype.normalize gets better browser support
 var unorm = require('unorm')
 
-var wlModule = require('./wordlists')
-var wordlists = wlModule.wordlists
-var DEFAULT_WORDLIST = wlModule.default
+var _wordlists = require('./wordlists')
+var wordlists = _wordlists.wordlists
+var DEFAULT_WORDLIST = _wordlists.default
 
 var INVALID_MNEMONIC = 'Invalid mnemonic'
 var INVALID_ENTROPY = 'Invalid entropy'
