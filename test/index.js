@@ -16,10 +16,13 @@ function testVector (description, wordlist, password, v, i) {
   var vseedHex = v[2]
 
   test('for ' + description + '(' + i + '), ' + ventropy, function (t) {
-    t.plan(5)
+    t.plan(6)
 
     t.equal(bip39.mnemonicToEntropy(vmnemonic, wordlist), ventropy, 'mnemonicToEntropy returns ' + ventropy.slice(0, 40) + '...')
     t.equal(bip39.mnemonicToSeedHex(vmnemonic, password), vseedHex, 'mnemonicToSeedHex returns ' + vseedHex.slice(0, 40) + '...')
+    bip39.mnemonicToSeedHexAsync(vmnemonic, password).then(function (asyncSeedHex) {
+      t.equal(asyncSeedHex, vseedHex, 'mnemonicToSeedHexAsync returns ' + vseedHex.slice(0, 40) + '...')
+    })
     t.equal(bip39.entropyToMnemonic(ventropy, wordlist), vmnemonic, 'entropyToMnemonic returns ' + vmnemonic.slice(0, 40) + '...')
 
     function rng () { return Buffer.from(ventropy, 'hex') }
