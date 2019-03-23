@@ -5,6 +5,9 @@
   "main": "index.js",
   "scripts": {
     "coverage": "nyc --branches 100 --functions 100 --check-coverage npm run unit",
+    "format": "npm run prettier -- --write",
+    "format:ci": "npm run prettier -- --check",
+    "prettier": "prettier 'ts_src/**/*.ts' --ignore-path ./.prettierignore",
     "standard": "standard",
     "test": "npm run standard && npm run unit",
     "unit": "tape test/*.js",
@@ -33,6 +36,7 @@
   "devDependencies": {
     "node-fetch": "^1.6.3",
     "nyc": "^13.1.0",
+    "prettier": "^1.16.4",
     "proxyquire": "^1.7.10",
     "standard": "^10.0.2",
     "tape": "^4.6.2",
