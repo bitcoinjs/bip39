@@ -53,9 +53,11 @@ function mnemonicToSeed(mnemonic, password) {
     const saltBuffer = Buffer.from(salt(unorm.nfkd(password)), 'utf8');
     return pbkdf2_1.pbkdf2Sync(mnemonicBuffer, saltBuffer, 2048, 64, 'sha512');
 }
+exports.mnemonicToSeed = mnemonicToSeed;
 function mnemonicToSeedHex(mnemonic, password) {
     return mnemonicToSeed(mnemonic, password).toString('hex');
 }
+exports.mnemonicToSeedHex = mnemonicToSeedHex;
 function mnemonicToSeedAsync(mnemonic, password) {
     return new Promise((resolve, reject) => {
         try {
@@ -73,12 +75,14 @@ function mnemonicToSeedAsync(mnemonic, password) {
         }
     });
 }
+exports.mnemonicToSeedAsync = mnemonicToSeedAsync;
 function mnemonicToSeedHexAsync(mnemonic, password) {
     return __awaiter(this, void 0, void 0, function* () {
         const buf = yield mnemonicToSeedAsync(mnemonic, password);
         return buf.toString('hex');
     });
 }
+exports.mnemonicToSeedHexAsync = mnemonicToSeedHexAsync;
 function mnemonicToEntropy(mnemonic, wordlist) {
     wordlist = wordlist || DEFAULT_WORDLIST;
     const words = unorm.nfkd(mnemonic).split(' ');
@@ -111,6 +115,7 @@ function mnemonicToEntropy(mnemonic, wordlist) {
         throw new Error(INVALID_CHECKSUM);
     return entropy.toString('hex');
 }
+exports.mnemonicToEntropy = mnemonicToEntropy;
 function entropyToMnemonic(entropy, wordlist) {
     if (!Buffer.isBuffer(entropy))
         entropy = Buffer.from(entropy, 'hex');
@@ -134,6 +139,7 @@ function entropyToMnemonic(entropy, wordlist) {
         ? words.join('\u3000')
         : words.join(' ');
 }
+exports.entropyToMnemonic = entropyToMnemonic;
 function generateMnemonic(strength, rng, wordlist) {
     strength = strength || 128;
     if (strength % 32 !== 0)
@@ -141,6 +147,7 @@ function generateMnemonic(strength, rng, wordlist) {
     rng = rng || randomBytes;
     return entropyToMnemonic(rng(strength / 8), wordlist);
 }
+exports.generateMnemonic = generateMnemonic;
 function validateMnemonic(mnemonic, wordlist) {
     try {
         mnemonicToEntropy(mnemonic, wordlist);
@@ -150,25 +157,16 @@ function validateMnemonic(mnemonic, wordlist) {
     }
     return true;
 }
-module.exports = {
-    mnemonicToSeed,
-    mnemonicToSeedAsync,
-    mnemonicToSeedHex,
-    mnemonicToSeedHexAsync,
-    mnemonicToEntropy,
-    entropyToMnemonic,
-    generateMnemonic,
-    validateMnemonic,
-    wordlists: {
-        EN: ENGLISH_WORDLIST,
-        JA: JAPANESE_WORDLIST,
-        chinese_simplified: CHINESE_SIMPLIFIED_WORDLIST,
-        chinese_traditional: CHINESE_TRADITIONAL_WORDLIST,
-        english: ENGLISH_WORDLIST,
-        french: FRENCH_WORDLIST,
-        italian: ITALIAN_WORDLIST,
-        japanese: JAPANESE_WORDLIST,
-        korean: KOREAN_WORDLIST,
-        spanish: SPANISH_WORDLIST,
-    },
+exports.validateMnemonic = validateMnemonic;
+exports.wordlists = {
+    EN: ENGLISH_WORDLIST,
+    JA: JAPANESE_WORDLIST,
+    chinese_simplified: CHINESE_SIMPLIFIED_WORDLIST,
+    chinese_traditional: CHINESE_TRADITIONAL_WORDLIST,
+    english: ENGLISH_WORDLIST,
+    french: FRENCH_WORDLIST,
+    italian: ITALIAN_WORDLIST,
+    japanese: JAPANESE_WORDLIST,
+    korean: KOREAN_WORDLIST,
+    spanish: SPANISH_WORDLIST,
 };

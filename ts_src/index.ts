@@ -47,18 +47,18 @@ function salt(password?: string): string {
   return 'mnemonic' + (password || '');
 }
 
-function mnemonicToSeed(mnemonic: string, password: string): Buffer {
+export function mnemonicToSeed(mnemonic: string, password: string): Buffer {
   const mnemonicBuffer = Buffer.from(unorm.nfkd(mnemonic), 'utf8');
   const saltBuffer = Buffer.from(salt(unorm.nfkd(password)), 'utf8');
 
   return pbkdf2(mnemonicBuffer, saltBuffer, 2048, 64, 'sha512');
 }
 
-function mnemonicToSeedHex(mnemonic: string, password: string): string {
+export function mnemonicToSeedHex(mnemonic: string, password: string): string {
   return mnemonicToSeed(mnemonic, password).toString('hex');
 }
 
-function mnemonicToSeedAsync(
+export function mnemonicToSeedAsync(
   mnemonic: string,
   password: string,
 ): Promise<Buffer> {
@@ -85,7 +85,7 @@ function mnemonicToSeedAsync(
   );
 }
 
-async function mnemonicToSeedHexAsync(
+export async function mnemonicToSeedHexAsync(
   mnemonic: string,
   password: string,
 ): Promise<string> {
@@ -93,7 +93,10 @@ async function mnemonicToSeedHexAsync(
   return buf.toString('hex');
 }
 
-function mnemonicToEntropy(mnemonic: string, wordlist: string[]): string {
+export function mnemonicToEntropy(
+  mnemonic: string,
+  wordlist?: string[],
+): string {
   wordlist = wordlist || DEFAULT_WORDLIST;
 
   const words = unorm.nfkd(mnemonic).split(' ');
@@ -102,7 +105,7 @@ function mnemonicToEntropy(mnemonic: string, wordlist: string[]): string {
   // convert word indices to 11 bit binary strings
   const bits = words
     .map(word => {
-      const index = wordlist.indexOf(word);
+      const index = wordlist!.indexOf(word);
       if (index === -1) throw new Error(INVALID_MNEMONIC);
 
       return lpad(index.toString(2), '0', 11);
@@ -127,7 +130,7 @@ function mnemonicToEntropy(mnemonic: string, wordlist: string[]): string {
   return entropy.toString('hex');
 }
 
-function entropyToMnemonic(
+export function entropyToMnemonic(
   entropy: Buffer | string,
   wordlist?: string[],
 ): string {
@@ -154,7 +157,7 @@ function entropyToMnemonic(
     : words.join(' ');
 }
 
-function generateMnemonic(
+export function generateMnemonic(
   strength?: number,
   rng?: (size: number) => Buffer,
   wordlist?: string[],
@@ -166,7 +169,10 @@ function generateMnemonic(
   return entropyToMnemonic(rng(strength / 8), wordlist);
 }
 
-function validateMnemonic(mnemonic: string, wordlist: string[]): boolean {
+export function validateMnemonic(
+  mnemonic: string,
+  wordlist?: string[],
+): boolean {
   try {
     mnemonicToEntropy(mnemonic, wordlist);
   } catch (e) {
@@ -176,26 +182,16 @@ function validateMnemonic(mnemonic: string, wordlist: string[]): boolean {
   return true;
 }
 
-module.exports = {
-  mnemonicToSeed,
-  mnemonicToSeedAsync,
-  mnemonicToSeedHex,
-  mnemonicToSeedHexAsync,
-  mnemonicToEntropy,
-  entropyToMnemonic,
-  generateMnemonic,
-  validateMnemonic,
-  wordlists: {
-    EN: ENGLISH_WORDLIST,
-    JA: JAPANESE_WORDLIST,
+export const wordlists = {
+  EN: ENGLISH_WORDLIST,
+  JA: JAPANESE_WORDLIST,
 
-    chinese_simplified: CHINESE_SIMPLIFIED_WORDLIST,
-    chinese_traditional: CHINESE_TRADITIONAL_WORDLIST,
-    english: ENGLISH_WORDLIST,
-    french: FRENCH_WORDLIST,
-    italian: ITALIAN_WORDLIST,
-    japanese: JAPANESE_WORDLIST,
-    korean: KOREAN_WORDLIST,
-    spanish: SPANISH_WORDLIST,
-  },
+  chinese_simplified: CHINESE_SIMPLIFIED_WORDLIST,
+  chinese_traditional: CHINESE_TRADITIONAL_WORDLIST,
+  english: ENGLISH_WORDLIST,
+  french: FRENCH_WORDLIST,
+  italian: ITALIAN_WORDLIST,
+  japanese: JAPANESE_WORDLIST,
+  korean: KOREAN_WORDLIST,
+  spanish: SPANISH_WORDLIST,
 };
