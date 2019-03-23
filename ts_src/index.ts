@@ -6,14 +6,14 @@ import randomBytes = require('randombytes');
 import unorm = require('unorm');
 
 // import CHINESE_SIMPLIFIED_WORDLIST from '../wordlists/chinese_simplified.json';
-import CHINESE_SIMPLIFIED_WORDLIST = require('../wordlists/chinese_simplified.json');
-import CHINESE_TRADITIONAL_WORDLIST = require('../wordlists/chinese_traditional.json');
-import ENGLISH_WORDLIST = require('../wordlists/english.json');
-import FRENCH_WORDLIST = require('../wordlists/french.json');
-import ITALIAN_WORDLIST = require('../wordlists/italian.json');
-import JAPANESE_WORDLIST = require('../wordlists/japanese.json');
-import KOREAN_WORDLIST = require('../wordlists/korean.json');
-import SPANISH_WORDLIST = require('../wordlists/spanish.json');
+import CHINESE_SIMPLIFIED_WORDLIST = require('./wordlists/chinese_simplified.json');
+import CHINESE_TRADITIONAL_WORDLIST = require('./wordlists/chinese_traditional.json');
+import ENGLISH_WORDLIST = require('./wordlists/english.json');
+import FRENCH_WORDLIST = require('./wordlists/french.json');
+import ITALIAN_WORDLIST = require('./wordlists/italian.json');
+import JAPANESE_WORDLIST = require('./wordlists/japanese.json');
+import KOREAN_WORDLIST = require('./wordlists/korean.json');
+import SPANISH_WORDLIST = require('./wordlists/spanish.json');
 const DEFAULT_WORDLIST = ENGLISH_WORDLIST;
 
 const INVALID_MNEMONIC = 'Invalid mnemonic';
