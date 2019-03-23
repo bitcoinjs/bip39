@@ -2,8 +2,10 @@
   "name": "bip39",
   "version": "2.6.0",
   "description": "Bitcoin BIP39: Mnemonic code for generating deterministic keys",
-  "main": "index.js",
+  "main": "src/index.js",
+  "types": "./types/index.d.ts",
   "scripts": {
+    "build": "tsc -p tsconfig.json",
     "coverage": "nyc --branches 100 --functions 100 --check-coverage npm run unit",
     "format": "npm run prettier -- --write",
     "format:ci": "npm run prettier -- --check",
@@ -26,6 +28,10 @@
     "url": "https://github.com/weilu/bip39.git"
   },
   "license": "ISC",
+  "files": [
+    "src",
+    "types"
+  ],
   "dependencies": {
     "create-hash": "^1.1.0",
     "pbkdf2": "^3.0.9",
