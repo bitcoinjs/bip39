@@ -30,24 +30,20 @@ function binaryToByte(bin: string): number {
 }
 
 function bytesToBinary(bytes: number[]): string {
-  return bytes
-    .map(function(x) {
-      return lpad(x.toString(2), '0', 8);
-    })
-    .join('');
+  return bytes.map(x => lpad(x.toString(2), '0', 8)).join('');
 }
 
-function deriveChecksumBits(entropyBuffer: Buffer) {
-  var ENT = entropyBuffer.length * 8;
-  var CS = ENT / 32;
-  var hash = createHash('sha256')
+function deriveChecksumBits(entropyBuffer: Buffer): string {
+  const ENT = entropyBuffer.length * 8;
+  const CS = ENT / 32;
+  const hash = createHash('sha256')
     .update(entropyBuffer)
     .digest();
 
   return bytesToBinary([].slice.call(hash)).slice(0, CS);
 }
 
-function salt(password?: string) {
+function salt(password?: string): string {
   return 'mnemonic' + (password || '');
 }
 
@@ -66,43 +62,47 @@ function mnemonicToSeedAsync(
   mnemonic: string,
   password: string,
 ): Promise<Buffer> {
-  return new Promise(function(resolve, reject) {
-    try {
-      var mnemonicBuffer = Buffer.from(unorm.nfkd(mnemonic), 'utf8');
-      var saltBuffer = Buffer.from(salt(unorm.nfkd(password)), 'utf8');
-    } catch (error) {
-      return reject(error);
-    }
-
-    pbkdf2Async(mnemonicBuffer, saltBuffer, 2048, 64, 'sha512', function(
-      err,
-      data,
-    ) {
-      if (err) return reject(err);
-      else return resolve(data);
-    });
-  });
+  return new Promise(
+    (resolve, reject): void => {
+      try {
+        const mnemonicBuffer = Buffer.from(unorm.nfkd(mnemonic), 'utf8');
+        const saltBuffer = Buffer.from(salt(unorm.nfkd(password)), 'utf8');
+        pbkdf2Async(
+          mnemonicBuffer,
+          saltBuffer,
+          2048,
+          64,
+          'sha512',
+          (err, data) => {
+            if (err) return reject(err);
+            else return resolve(data);
+          },
+        );
+      } catch (error) {
+        return reject(error);
+      }
+    },
+  );
 }
 
-function mnemonicToSeedHexAsync(
+async function mnemonicToSeedHexAsync(
   mnemonic: string,
   password: string,
 ): Promise<string> {
-  return mnemonicToSeedAsync(mnemonic, password).then(function(buf) {
-    return buf.toString('hex');
-  });
+  const buf = await mnemonicToSeedAsync(mnemonic, password);
+  return buf.toString('hex');
 }
 
-function mnemonicToEntropy(mnemonic: string, wordlist: string[]) {
+function mnemonicToEntropy(mnemonic: string, wordlist: string[]): string {
   wordlist = wordlist || DEFAULT_WORDLIST;
 
-  var words = unorm.nfkd(mnemonic).split(' ');
+  const words = unorm.nfkd(mnemonic).split(' ');
   if (words.length % 3 !== 0) throw new Error(INVALID_MNEMONIC);
 
   // convert word indices to 11 bit binary strings
-  var bits = words
-    .map(function(word) {
-      var index = wordlist.indexOf(word);
+  const bits = words
+    .map(word => {
+      const index = wordlist.indexOf(word);
       if (index === -1) throw new Error(INVALID_MNEMONIC);
 
       return lpad(index.toString(2), '0', 11);
@@ -110,18 +110,18 @@ function mnemonicToEntropy(mnemonic: string, wordlist: string[]) {
     .join('');
 
   // split the binary string into ENT/CS
-  var dividerIndex = Math.floor(bits.length / 33) * 32;
-  var entropyBits = bits.slice(0, dividerIndex);
-  var checksumBits = bits.slice(dividerIndex);
+  const dividerIndex = Math.floor(bits.length / 33) * 32;
+  const entropyBits = bits.slice(0, dividerIndex);
+  const checksumBits = bits.slice(dividerIndex);
 
   // calculate the checksum and compare
-  var entropyBytes = entropyBits.match(/(.{1,8})/g)!.map(binaryToByte);
+  const entropyBytes = entropyBits.match(/(.{1,8})/g)!.map(binaryToByte);
   if (entropyBytes.length < 16) throw new Error(INVALID_ENTROPY);
   if (entropyBytes.length > 32) throw new Error(INVALID_ENTROPY);
   if (entropyBytes.length % 4 !== 0) throw new Error(INVALID_ENTROPY);
 
-  var entropy = Buffer.from(entropyBytes);
-  var newChecksum = deriveChecksumBits(entropy);
+  const entropy = Buffer.from(entropyBytes);
+  const newChecksum = deriveChecksumBits(entropy);
   if (newChecksum !== checksumBits) throw new Error(INVALID_CHECKSUM);
 
   return entropy.toString('hex');
@@ -139,13 +139,13 @@ function entropyToMnemonic(
   if (entropy.length > 32) throw new TypeError(INVALID_ENTROPY);
   if (entropy.length % 4 !== 0) throw new TypeError(INVALID_ENTROPY);
 
-  var entropyBits = bytesToBinary([].slice.call(entropy));
-  var checksumBits = deriveChecksumBits(entropy);
+  const entropyBits = bytesToBinary([].slice.call(entropy));
+  const checksumBits = deriveChecksumBits(entropy);
 
-  var bits = entropyBits + checksumBits;
-  var chunks = bits.match(/(.{1,11})/g)!;
-  var words = chunks.map(function(binary) {
-    var index = binaryToByte(binary);
+  const bits = entropyBits + checksumBits;
+  const chunks = bits.match(/(.{1,11})/g)!;
+  const words = chunks.map(binary => {
+    const index = binaryToByte(binary);
     return wordlist![index];
   });
 
@@ -177,14 +177,14 @@ function validateMnemonic(mnemonic: string, wordlist: string[]): boolean {
 }
 
 module.exports = {
-  mnemonicToSeed: mnemonicToSeed,
-  mnemonicToSeedAsync: mnemonicToSeedAsync,
-  mnemonicToSeedHex: mnemonicToSeedHex,
-  mnemonicToSeedHexAsync: mnemonicToSeedHexAsync,
-  mnemonicToEntropy: mnemonicToEntropy,
-  entropyToMnemonic: entropyToMnemonic,
-  generateMnemonic: generateMnemonic,
-  validateMnemonic: validateMnemonic,
+  mnemonicToSeed,
+  mnemonicToSeedAsync,
+  mnemonicToSeedHex,
+  mnemonicToSeedHexAsync,
+  mnemonicToEntropy,
+  entropyToMnemonic,
+  generateMnemonic,
+  validateMnemonic,
   wordlists: {
     EN: ENGLISH_WORDLIST,
     JA: JAPANESE_WORDLIST,

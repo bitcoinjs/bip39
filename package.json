@@ -9,6 +9,7 @@
     "coverage": "nyc --branches 100 --functions 100 --check-coverage npm run unit",
     "format": "npm run prettier -- --write",
     "format:ci": "npm run prettier -- --check",
+    "lint": "tslint -p tsconfig.json -c tslint.json",
     "prettier": "prettier 'ts_src/**/*.ts' --ignore-path ./.prettierignore",
     "standard": "standard",
     "test": "npm run standard && npm run unit",
@@ -50,6 +51,7 @@
     "proxyquire": "^1.7.10",
     "standard": "^10.0.2",
     "tape": "^4.6.2",
+    "tslint": "^5.14.0",
     "typescript": "3.3.4000"
   }
 }
