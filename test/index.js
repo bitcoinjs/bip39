@@ -1,9 +1,8 @@
-var bip39 = require('../')
-var Buffer = require('safe-buffer').Buffer
+var bip39 = require('../src')
 var download = require('../util/wordlists').download
 var WORDLISTS = {
-  english: require('../wordlists/english.json'),
-  japanese: require('../wordlists/japanese.json'),
+  english: require('../src/wordlists/english.json'),
+  japanese: require('../src/wordlists/japanese.json'),
   custom: require('./wordlist.json')
 }
 
