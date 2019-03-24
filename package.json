@@ -5,7 +5,8 @@
   "main": "src/index.js",
   "types": "./types/index.d.ts",
   "scripts": {
-    "build": "tsc -p tsconfig.json",
+    "build": "npm run clean && tsc -p tsconfig.json",
+    "clean": "rm -rf src",
     "coverage": "nyc --branches 100 --functions 100 --check-coverage npm run unit",
     "format": "npm run prettier -- --write",
     "format:ci": "npm run prettier -- --check",
