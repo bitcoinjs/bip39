@@ -5,7 +5,6 @@ import randomBytes = require('randombytes');
 // use unorm until String.prototype.normalize gets better browser support
 import unorm = require('unorm');
 
-// import CHINESE_SIMPLIFIED_WORDLIST from '../wordlists/chinese_simplified.json';
 import CHINESE_SIMPLIFIED_WORDLIST = require('./wordlists/chinese_simplified.json');
 import CHINESE_TRADITIONAL_WORDLIST = require('./wordlists/chinese_traditional.json');
 import ENGLISH_WORDLIST = require('./wordlists/english.json');

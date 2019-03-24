@@ -5,7 +5,6 @@ const pbkdf2_1 = require("pbkdf2");
 const randomBytes = require("randombytes");
 // use unorm until String.prototype.normalize gets better browser support
 const unorm = require("unorm");
-// import CHINESE_SIMPLIFIED_WORDLIST from '../wordlists/chinese_simplified.json';
 const CHINESE_SIMPLIFIED_WORDLIST = require("./wordlists/chinese_simplified.json");
 const CHINESE_TRADITIONAL_WORDLIST = require("./wordlists/chinese_traditional.json");
 const ENGLISH_WORDLIST = require("./wordlists/english.json");
