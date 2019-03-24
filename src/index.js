@@ -1,12 +1,4 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 const createHash = require("create-hash");
 const pbkdf2_1 = require("pbkdf2");
@@ -76,11 +68,9 @@ function mnemonicToSeedAsync(mnemonic, password) {
     });
 }
 exports.mnemonicToSeedAsync = mnemonicToSeedAsync;
-function mnemonicToSeedHexAsync(mnemonic, password) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const buf = yield mnemonicToSeedAsync(mnemonic, password);
-        return buf.toString('hex');
-    });
+async function mnemonicToSeedHexAsync(mnemonic, password) {
+    const buf = await mnemonicToSeedAsync(mnemonic, password);
+    return buf.toString('hex');
 }
 exports.mnemonicToSeedHexAsync = mnemonicToSeedHexAsync;
 function mnemonicToEntropy(mnemonic, wordlist) {
