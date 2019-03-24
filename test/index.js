@@ -1,4 +1,4 @@
-var bip39 = require('../src')
+var bip39 = require('../')
 var download = require('../util/wordlists').download
 var WORDLISTS = {
   english: require('../src/wordlists/english.json'),
