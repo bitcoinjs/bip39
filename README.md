@@ -53,11 +53,11 @@ bip39.validateMnemonic('basket actual')
 
 
 ``` js
-var bip39 = require('bip39')
+const bip39 = require('bip39')
 
 // defaults to BIP39 English word list
 // uses HEX strings for entropy
-var mnemonic = bip39.entropyToMnemonic('00000000000000000000000000000000')
+const mnemonic = bip39.entropyToMnemonic('00000000000000000000000000000000')
 // => abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about
 
 // reversible

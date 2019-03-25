@@ -1,12 +1,12 @@
-var bip39 = require('../')
-var Buffer = require('safe-buffer').Buffer
-var proxyquire = require('proxyquire')
-var test = require('tape')
+const bip39 = require('../')
+const Buffer = require('safe-buffer').Buffer
+const proxyquire = require('proxyquire')
+const test = require('tape')
 
 test('README example 1', function (t) {
   // defaults to BIP39 English word list
-  var entropy = 'ffffffffffffffffffffffffffffffff'
-  var mnemonic = bip39.entropyToMnemonic(entropy)
+  const entropy = 'ffffffffffffffffffffffffffffffff'
+  const mnemonic = bip39.entropyToMnemonic(entropy)
 
   t.plan(2)
   t.equal(mnemonic, 'zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo wrong')
@@ -16,15 +16,15 @@ test('README example 1', function (t) {
 })
 
 test('README example 2', function (t) {
-  var stub = {
+  const stub = {
     randombytes: function (size) {
       return Buffer.from('qwertyuiopasdfghjklzxcvbnm[];,./'.slice(0, size), 'utf8')
     }
   }
-  var proxiedbip39 = proxyquire('../', stub)
+  const proxiedbip39 = proxyquire('../', stub)
 
   // mnemonic strength defaults to 128 bits
-  var mnemonic = proxiedbip39.generateMnemonic()
+  const mnemonic = proxiedbip39.generateMnemonic()
 
   t.plan(2)
   t.equal(mnemonic, 'imitate robot frame trophy nuclear regret saddle around inflict case oil spice')
@@ -32,9 +32,9 @@ test('README example 2', function (t) {
 })
 
 test('README example 3', function (t) {
-  var mnemonic = 'basket actual'
-  var seed = bip39.mnemonicToSeed(mnemonic)
-  var seedHex = bip39.mnemonicToSeedHex(mnemonic)
+  const mnemonic = 'basket actual'
+  const seed = bip39.mnemonicToSeed(mnemonic)
+  const seedHex = bip39.mnemonicToSeedHex(mnemonic)
 
   t.plan(3)
   t.equal(seed.toString('hex'), seedHex)
