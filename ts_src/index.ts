@@ -39,7 +39,7 @@ function deriveChecksumBits(entropyBuffer: Buffer): string {
     .update(entropyBuffer)
     .digest();
 
-  return bytesToBinary([].slice.call(hash)).slice(0, CS);
+  return bytesToBinary([...hash]).slice(0, CS);
 }
 
 function salt(password?: string): string {
@@ -141,7 +141,7 @@ export function entropyToMnemonic(
   if (entropy.length > 32) throw new TypeError(INVALID_ENTROPY);
   if (entropy.length % 4 !== 0) throw new TypeError(INVALID_ENTROPY);
 
-  const entropyBits = bytesToBinary([].slice.call(entropy));
+  const entropyBits = bytesToBinary([...entropy]);
   const checksumBits = deriveChecksumBits(entropy);
 
   const bits = entropyBits + checksumBits;

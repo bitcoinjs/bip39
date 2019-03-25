@@ -34,7 +34,7 @@ function deriveChecksumBits(entropyBuffer) {
     const hash = createHash('sha256')
         .update(entropyBuffer)
         .digest();
-    return bytesToBinary([].slice.call(hash)).slice(0, CS);
+    return bytesToBinary([...hash]).slice(0, CS);
 }
 function salt(password) {
     return 'mnemonic' + (password || '');
@@ -116,7 +116,7 @@ function entropyToMnemonic(entropy, wordlist) {
         throw new TypeError(INVALID_ENTROPY);
     if (entropy.length % 4 !== 0)
         throw new TypeError(INVALID_ENTROPY);
-    const entropyBits = bytesToBinary([].slice.call(entropy));
+    const entropyBits = bytesToBinary([...entropy]);
     const checksumBits = deriveChecksumBits(entropy);
     const bits = entropyBits + checksumBits;
     const chunks = bits.match(/(.{1,11})/g);
