@@ -43,7 +43,7 @@ function toJSON (content) {
 }
 
 function save (name, wordlist) {
-  var location = path.join(__dirname, '..', 'wordlists', name + '.json')
+  var location = path.join(__dirname, '..', 'ts_src', 'wordlists', name + '.json')
   var content = JSON.stringify(wordlist, null, 2) + '\n'
   log('save ' + wordlist.length + ' words to ' + location)
 
