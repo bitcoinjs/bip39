@@ -1,23 +1,18 @@
-import createHash = require('create-hash');
+import * as createHash from 'create-hash';
 import { pbkdf2 as pbkdf2Async, pbkdf2Sync as pbkdf2 } from 'pbkdf2';
-import randomBytes = require('randombytes');
-
+import * as randomBytes from 'randombytes';
 // use unorm until String.prototype.normalize gets better browser support
-import unorm = require('unorm');
+import * as unorm from 'unorm';
+import { _default as _DEFAULT_WORDLIST, wordlists } from './_wordlists';
 
-import CHINESE_SIMPLIFIED_WORDLIST = require('./wordlists/chinese_simplified.json');
-import CHINESE_TRADITIONAL_WORDLIST = require('./wordlists/chinese_traditional.json');
-import ENGLISH_WORDLIST = require('./wordlists/english.json');
-import FRENCH_WORDLIST = require('./wordlists/french.json');
-import ITALIAN_WORDLIST = require('./wordlists/italian.json');
-import JAPANESE_WORDLIST = require('./wordlists/japanese.json');
-import KOREAN_WORDLIST = require('./wordlists/korean.json');
-import SPANISH_WORDLIST = require('./wordlists/spanish.json');
-const DEFAULT_WORDLIST = ENGLISH_WORDLIST;
+let DEFAULT_WORDLIST: string[] | undefined = _DEFAULT_WORDLIST;
 
 const INVALID_MNEMONIC = 'Invalid mnemonic';
 const INVALID_ENTROPY = 'Invalid entropy';
 const INVALID_CHECKSUM = 'Invalid mnemonic checksum';
+const WORDLIST_REQUIRED =
+  'A wordlist is required but a default could not be found.\n' +
+  'Please explicitly pass a 2048 word array explicitly.';
 
 function lpad(str: string, padString: string, length: number): string {
   while (str.length < length) str = padString + str;
@@ -97,6 +92,9 @@ export function mnemonicToEntropy(
   wordlist?: string[],
 ): string {
   wordlist = wordlist || DEFAULT_WORDLIST;
+  if (!wordlist) {
+    throw new Error(WORDLIST_REQUIRED);
+  }
 
   const words = unorm.nfkd(mnemonic).split(' ');
   if (words.length % 3 !== 0) throw new Error(INVALID_MNEMONIC);
@@ -135,6 +133,9 @@ export function entropyToMnemonic(
 ): string {
   if (!Buffer.isBuffer(entropy)) entropy = Buffer.from(entropy, 'hex');
   wordlist = wordlist || DEFAULT_WORDLIST;
+  if (!wordlist) {
+    throw new Error(WORDLIST_REQUIRED);
+  }
 
   // 128 <= ENT <= 256
   if (entropy.length < 16) throw new TypeError(INVALID_ENTROPY);
@@ -151,7 +152,7 @@ export function entropyToMnemonic(
     return wordlist![index];
   });
 
-  return wordlist === JAPANESE_WORDLIST
+  return wordlist[0] === '\u3042\u3044\u3053\u304f\u3057\u3093' // Japanese wordlist
     ? words.join('\u3000')
     : words.join(' ');
 }
@@ -181,16 +182,9 @@ export function validateMnemonic(
   return true;
 }
 
-export const wordlists = {
-  EN: ENGLISH_WORDLIST,
-  JA: JAPANESE_WORDLIST,
+export function setDefaultWordlist(language: string): void {
+  const result = wordlists[language];
+  if (result) DEFAULT_WORDLIST = result;
+}
 
-  chinese_simplified: CHINESE_SIMPLIFIED_WORDLIST,
-  chinese_traditional: CHINESE_TRADITIONAL_WORDLIST,
-  english: ENGLISH_WORDLIST,
-  french: FRENCH_WORDLIST,
-  italian: ITALIAN_WORDLIST,
-  japanese: JAPANESE_WORDLIST,
-  korean: KOREAN_WORDLIST,
-  spanish: SPANISH_WORDLIST,
-};
+export { wordlists } from './_wordlists';

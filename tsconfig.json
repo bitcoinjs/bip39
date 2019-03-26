@@ -24,7 +24,8 @@
     "resolveJsonModule": true
   },
   "include": [
-      "ts_src/**/*.ts"
+      "ts_src/**/*.ts",
+      "ts_src/**/*.json"
   ],
   "exclude": [
       "**/*.spec.ts",

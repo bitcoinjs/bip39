@@ -7,15 +7,5 @@ export declare function mnemonicToEntropy(mnemonic: string, wordlist?: string[])
 export declare function entropyToMnemonic(entropy: Buffer | string, wordlist?: string[]): string;
 export declare function generateMnemonic(strength?: number, rng?: (size: number) => Buffer, wordlist?: string[]): string;
 export declare function validateMnemonic(mnemonic: string, wordlist?: string[]): boolean;
-export declare const wordlists: {
-    EN: string[];
-    JA: string[];
-    chinese_simplified: string[];
-    chinese_traditional: string[];
-    english: string[];
-    french: string[];
-    italian: string[];
-    japanese: string[];
-    korean: string[];
-    spanish: string[];
-};
+export declare function setDefaultWordlist(language: string): void;
+export { wordlists } from './_wordlists';
