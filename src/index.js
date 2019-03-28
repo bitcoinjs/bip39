@@ -152,7 +152,19 @@ function setDefaultWordlist(language) {
     const result = _wordlists_1.wordlists[language];
     if (result)
         DEFAULT_WORDLIST = result;
+    else
+        throw new Error('Could not find wordlist for language "' + language + '"');
 }
 exports.setDefaultWordlist = setDefaultWordlist;
+function getDefaultWordlist() {
+    if (!DEFAULT_WORDLIST)
+        throw new Error('No Default Wordlist set');
+    return Object.keys(_wordlists_1.wordlists).filter(lang => {
+        if (lang === 'JA' || lang === 'EN')
+            return false;
+        return _wordlists_1.wordlists[lang].every((word, index) => word === DEFAULT_WORDLIST[index]);
+    })[0];
+}
+exports.getDefaultWordlist = getDefaultWordlist;
 var _wordlists_2 = require("./_wordlists");
 exports.wordlists = _wordlists_2.wordlists;

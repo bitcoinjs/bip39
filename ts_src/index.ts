@@ -185,6 +185,18 @@ export function validateMnemonic(
 export function setDefaultWordlist(language: string): void {
   const result = wordlists[language];
   if (result) DEFAULT_WORDLIST = result;
+  else
+    throw new Error('Could not find wordlist for language "' + language + '"');
+}
+
+export function getDefaultWordlist(): string {
+  if (!DEFAULT_WORDLIST) throw new Error('No Default Wordlist set');
+  return Object.keys(wordlists).filter(lang => {
+    if (lang === 'JA' || lang === 'EN') return false;
+    return wordlists[lang].every(
+      (word, index) => word === DEFAULT_WORDLIST![index],
+    );
+  })[0];
 }
 
 export { wordlists } from './_wordlists';
