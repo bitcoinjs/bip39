@@ -47,9 +47,11 @@ function salt (password) {
 }
 
 function mnemonicToSeed (mnemonic, password) {
+  if (!password) {
+    password = ''
+  }
   var mnemonicBuffer = Buffer.from(mnemonic.normalize('NFKD'), 'utf8')
   var saltBuffer = Buffer.from(salt(password.normalize('NFKD')), 'utf8')
-
   return pbkdf2(mnemonicBuffer, saltBuffer, 2048, 64, 'sha512')
 }
 
@@ -60,6 +62,9 @@ function mnemonicToSeedHex (mnemonic, password) {
 function mnemonicToSeedAsync (mnemonic, password) {
   return new Promise(function (resolve, reject) {
     try {
+      if (!password) {
+        password = ''
+      }
       var mnemonicBuffer = Buffer.from(mnemonic.normalize('NFKD'), 'utf8')
       var saltBuffer = Buffer.from(salt(password.normalize('NFKD')), 'utf8')
     } catch (error) {
