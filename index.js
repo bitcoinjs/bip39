@@ -5,8 +5,6 @@ var pbkdf2 = _pbkdf2.pbkdf2Sync
 var pbkdf2Async = _pbkdf2.pbkdf2
 var randomBytes = require('randombytes')
 
-// use unorm until String.prototype.normalize gets better browser support
-var unorm = require('unorm')
 
 var CHINESE_SIMPLIFIED_WORDLIST = require('./wordlists/chinese_simplified.json')
 var CHINESE_TRADITIONAL_WORDLIST = require('./wordlists/chinese_traditional.json')
@@ -63,8 +61,8 @@ function mnemonicToSeedHex (mnemonic, password) {
 function mnemonicToSeedAsync (mnemonic, password) {
   return new Promise(function (resolve, reject) {
     try {
-      var mnemonicBuffer = Buffer.from(unorm.nfkd(mnemonic), 'utf8')
-      var saltBuffer = Buffer.from(salt(unorm.nfkd(password)), 'utf8')
+      var mnemonicBuffer = Buffer.from(mnemonic.normalize('NFKD'), 'utf8')
+      var saltBuffer = Buffer.from(salt(password.normalize('NFKD')), 'utf8')
     } catch (error) {
       return reject(error)
     }
@@ -84,7 +82,7 @@ function mnemonicToSeedHexAsync (mnemonic, password) {
 function mnemonicToEntropy (mnemonic, wordlist) {
   wordlist = wordlist || DEFAULT_WORDLIST
 
-  var words = unorm.nfkd(mnemonic).split(' ')
+  var words = mnemonic.normalize('NFKD').split(' ')
   if (words.length % 3 !== 0) throw new Error(INVALID_MNEMONIC)
 
   // convert word indices to 11 bit binary strings
