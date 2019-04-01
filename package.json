@@ -3,6 +3,9 @@
   "version": "2.6.0",
   "description": "Bitcoin BIP39: Mnemonic code for generating deterministic keys",
   "main": "index.js",
+  "files": [
+    "wordlists"
+  ],
   "scripts": {
     "coverage": "nyc --branches 100 --functions 100 --check-coverage npm run unit",
     "standard": "standard",
