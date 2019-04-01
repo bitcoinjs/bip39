@@ -10,6 +10,7 @@
     "coverage": "nyc --branches 100 --functions 100 --check-coverage npm run unit",
     "format": "npm run prettier -- --write",
     "format:ci": "npm run prettier -- --check",
+    "gitdiff:ci": "npm run build && git diff --exit-code",
     "lint": "tslint -p tsconfig.json -c tslint.json",
     "prettier": "prettier 'ts_src/**/*.ts' --ignore-path ./.prettierignore",
     "test": "npm run build && npm run format:ci && npm run lint && npm run unit",
