@@ -1,5 +1,5 @@
 import * as createHash from 'create-hash';
-import { pbkdf2 as pbkdf2Async, pbkdf2Sync as pbkdf2 } from 'pbkdf2';
+import { pbkdf2, pbkdf2Sync } from 'pbkdf2';
 import * as randomBytes from 'randombytes';
 import { _default as _DEFAULT_WORDLIST, wordlists } from './_wordlists';
 
@@ -39,7 +39,7 @@ function salt(password?: string): string {
   return 'mnemonic' + (password || '');
 }
 
-export function mnemonicToSeed(mnemonic: string, password: string): Buffer {
+export function mnemonicToSeedSync(mnemonic: string, password: string): Buffer {
   const mnemonicBuffer = Buffer.from(
     (mnemonic || '').normalize('NFKD'),
     'utf8',
@@ -49,14 +49,10 @@ export function mnemonicToSeed(mnemonic: string, password: string): Buffer {
     'utf8',
   );
 
-  return pbkdf2(mnemonicBuffer, saltBuffer, 2048, 64, 'sha512');
+  return pbkdf2Sync(mnemonicBuffer, saltBuffer, 2048, 64, 'sha512');
 }
 
-export function mnemonicToSeedHex(mnemonic: string, password: string): string {
-  return mnemonicToSeed(mnemonic, password).toString('hex');
-}
-
-export function mnemonicToSeedAsync(
+export function mnemonicToSeed(
   mnemonic: string,
   password: string,
 ): Promise<Buffer> {
@@ -71,30 +67,15 @@ export function mnemonicToSeedAsync(
           salt((password || '').normalize('NFKD')),
           'utf8',
         );
-        pbkdf2Async(
-          mnemonicBuffer,
-          saltBuffer,
-          2048,
-          64,
-          'sha512',
-          (err, data) => {
-            if (err) return reject(err);
-            else return resolve(data);
-          },
-        );
+        pbkdf2(mnemonicBuffer, saltBuffer, 2048, 64, 'sha512', (err, data) => {
+          if (err) return reject(err);
+          else return resolve(data);
+        });
       } catch (error) {
         return reject(error);
       }
     },
   );
-}
-
-export async function mnemonicToSeedHexAsync(
-  mnemonic: string,
-  password: string,
-): Promise<string> {
-  const buf = await mnemonicToSeedAsync(mnemonic, password);
-  return buf.toString('hex');
 }
 
 export function mnemonicToEntropy(

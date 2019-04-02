@@ -32,17 +32,13 @@ function deriveChecksumBits(entropyBuffer) {
 function salt(password) {
     return 'mnemonic' + (password || '');
 }
-function mnemonicToSeed(mnemonic, password) {
+function mnemonicToSeedSync(mnemonic, password) {
     const mnemonicBuffer = Buffer.from((mnemonic || '').normalize('NFKD'), 'utf8');
     const saltBuffer = Buffer.from(salt((password || '').normalize('NFKD')), 'utf8');
     return pbkdf2_1.pbkdf2Sync(mnemonicBuffer, saltBuffer, 2048, 64, 'sha512');
 }
-exports.mnemonicToSeed = mnemonicToSeed;
-function mnemonicToSeedHex(mnemonic, password) {
-    return mnemonicToSeed(mnemonic, password).toString('hex');
-}
-exports.mnemonicToSeedHex = mnemonicToSeedHex;
-function mnemonicToSeedAsync(mnemonic, password) {
+exports.mnemonicToSeedSync = mnemonicToSeedSync;
+function mnemonicToSeed(mnemonic, password) {
     return new Promise((resolve, reject) => {
         try {
             const mnemonicBuffer = Buffer.from((mnemonic || '').normalize('NFKD'), 'utf8');
@@ -59,12 +55,7 @@ function mnemonicToSeedAsync(mnemonic, password) {
         }
     });
 }
-exports.mnemonicToSeedAsync = mnemonicToSeedAsync;
-async function mnemonicToSeedHexAsync(mnemonic, password) {
-    const buf = await mnemonicToSeedAsync(mnemonic, password);
-    return buf.toString('hex');
-}
-exports.mnemonicToSeedHexAsync = mnemonicToSeedHexAsync;
+exports.mnemonicToSeed = mnemonicToSeed;
 function mnemonicToEntropy(mnemonic, wordlist) {
     wordlist = wordlist || DEFAULT_WORDLIST;
     if (!wordlist) {

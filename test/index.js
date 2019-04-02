@@ -18,9 +18,9 @@ function testVector (description, wordlist, password, v, i) {
     t.plan(6)
 
     t.equal(bip39.mnemonicToEntropy(vmnemonic, wordlist), ventropy, 'mnemonicToEntropy returns ' + ventropy.slice(0, 40) + '...')
-    t.equal(bip39.mnemonicToSeedHex(vmnemonic, password), vseedHex, 'mnemonicToSeedHex returns ' + vseedHex.slice(0, 40) + '...')
-    bip39.mnemonicToSeedHexAsync(vmnemonic, password).then(function (asyncSeedHex) {
-      t.equal(asyncSeedHex, vseedHex, 'mnemonicToSeedHexAsync returns ' + vseedHex.slice(0, 40) + '...')
+    t.equal(bip39.mnemonicToSeedSync(vmnemonic, password).toString('hex'), vseedHex, 'mnemonicToSeedSync returns ' + vseedHex.slice(0, 40) + '...')
+    bip39.mnemonicToSeed(vmnemonic, password).then(function (asyncSeed) {
+      t.equal(asyncSeed.toString('hex'), vseedHex, 'mnemonicToSeed returns ' + vseedHex.slice(0, 40) + '...')
     })
     t.equal(bip39.entropyToMnemonic(ventropy, wordlist), vmnemonic, 'entropyToMnemonic returns ' + vmnemonic.slice(0, 40) + '...')
 
@@ -100,8 +100,8 @@ test('UTF8 passwords', function (t) {
     var password = '㍍ガバヴァぱばぐゞちぢ十人十色'
     var normalizedPassword = 'メートルガバヴァぱばぐゞちぢ十人十色'
 
-    t.equal(bip39.mnemonicToSeedHex(vmnemonic, password), vseedHex, 'mnemonicToSeedHex normalizes passwords')
-    t.equal(bip39.mnemonicToSeedHex(vmnemonic, normalizedPassword), vseedHex, 'mnemonicToSeedHex leaves normalizes passwords as-is')
+    t.equal(bip39.mnemonicToSeedSync(vmnemonic, password).toString('hex'), vseedHex, 'mnemonicToSeedSync normalizes passwords')
+    t.equal(bip39.mnemonicToSeedSync(vmnemonic, normalizedPassword).toString('hex'), vseedHex, 'mnemonicToSeedSync leaves normalizes passwords as-is')
   })
 })
 
