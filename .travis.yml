@@ -6,6 +6,10 @@ node_js:
   - "lts/*"
   - "9"
   - "10"
+matrix:
+  include:
+    - node_js: "lts/*"
+      env: TEST_SUITE=gitdiff:ci
 env:
   - TEST_SUITE=test
 script: npm run-script $TEST_SUITE

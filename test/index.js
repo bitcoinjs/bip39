@@ -34,6 +34,46 @@ vectors.english.forEach(function (v, i) { testVector('English', undefined, 'TREZ
 vectors.japanese.forEach(function (v, i) { testVector('Japanese', WORDLISTS.japanese, '㍍ガバヴァぱばぐゞちぢ十人十色', v, i) })
 vectors.custom.forEach(function (v, i) { testVector('Custom', WORDLISTS.custom, undefined, v, i) })
 
+test('getDefaultWordlist returns "english"', function (t) {
+  t.plan(1)
+  const english = bip39.getDefaultWordlist()
+  t.equal(english, 'english')
+  // TODO: Test that Error throws when called if no wordlists are compiled with bip39
+})
+
+test('setDefaultWordlist changes default wordlist', function (t) {
+  t.plan(4)
+  const english = bip39.getDefaultWordlist()
+  t.equal(english, 'english')
+
+  bip39.setDefaultWordlist('italian')
+
+  const italian = bip39.getDefaultWordlist()
+  t.equal(italian, 'italian')
+
+  const phraseItalian = bip39.entropyToMnemonic('00000000000000000000000000000000')
+  t.equal(phraseItalian.slice(0, 5), 'abaco')
+
+  bip39.setDefaultWordlist('english')
+
+  const phraseEnglish = bip39.entropyToMnemonic('00000000000000000000000000000000')
+  t.equal(phraseEnglish.slice(0, 7), 'abandon')
+})
+
+test('setDefaultWordlist throws on unknown wordlist', function (t) {
+  t.plan(2)
+  const english = bip39.getDefaultWordlist()
+  t.equal(english, 'english')
+
+  try {
+    bip39.setDefaultWordlist('abcdefghijklmnop')
+  } catch (error) {
+    t.equal(error.message, 'Could not find wordlist for language "abcdefghijklmnop"')
+    return
+  }
+  t.assert(false)
+})
+
 test('invalid entropy', function (t) {
   t.plan(3)
 
