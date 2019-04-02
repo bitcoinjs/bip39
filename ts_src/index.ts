@@ -1,8 +1,6 @@
 import * as createHash from 'create-hash';
 import { pbkdf2 as pbkdf2Async, pbkdf2Sync as pbkdf2 } from 'pbkdf2';
 import * as randomBytes from 'randombytes';
-// use unorm until String.prototype.normalize gets better browser support
-import * as unorm from 'unorm';
 import { _default as _DEFAULT_WORDLIST, wordlists } from './_wordlists';
 
 let DEFAULT_WORDLIST: string[] | undefined = _DEFAULT_WORDLIST;
@@ -42,8 +40,14 @@ function salt(password?: string): string {
 }
 
 export function mnemonicToSeed(mnemonic: string, password: string): Buffer {
-  const mnemonicBuffer = Buffer.from(unorm.nfkd(mnemonic), 'utf8');
-  const saltBuffer = Buffer.from(salt(unorm.nfkd(password)), 'utf8');
+  const mnemonicBuffer = Buffer.from(
+    (mnemonic || '').normalize('NFKD'),
+    'utf8',
+  );
+  const saltBuffer = Buffer.from(
+    salt((password || '').normalize('NFKD')),
+    'utf8',
+  );
 
   return pbkdf2(mnemonicBuffer, saltBuffer, 2048, 64, 'sha512');
 }
@@ -59,8 +63,14 @@ export function mnemonicToSeedAsync(
   return new Promise(
     (resolve, reject): void => {
       try {
-        const mnemonicBuffer = Buffer.from(unorm.nfkd(mnemonic), 'utf8');
-        const saltBuffer = Buffer.from(salt(unorm.nfkd(password)), 'utf8');
+        const mnemonicBuffer = Buffer.from(
+          (mnemonic || '').normalize('NFKD'),
+          'utf8',
+        );
+        const saltBuffer = Buffer.from(
+          salt((password || '').normalize('NFKD')),
+          'utf8',
+        );
         pbkdf2Async(
           mnemonicBuffer,
           saltBuffer,
@@ -96,7 +106,7 @@ export function mnemonicToEntropy(
     throw new Error(WORDLIST_REQUIRED);
   }
 
-  const words = unorm.nfkd(mnemonic).split(' ');
+  const words = (mnemonic || '').normalize('NFKD').split(' ');
   if (words.length % 3 !== 0) throw new Error(INVALID_MNEMONIC);
 
   // convert word indices to 11 bit binary strings

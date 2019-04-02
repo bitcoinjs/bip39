@@ -3,8 +3,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const createHash = require("create-hash");
 const pbkdf2_1 = require("pbkdf2");
 const randomBytes = require("randombytes");
-// use unorm until String.prototype.normalize gets better browser support
-const unorm = require("unorm");
 const _wordlists_1 = require("./_wordlists");
 let DEFAULT_WORDLIST = _wordlists_1._default;
 const INVALID_MNEMONIC = 'Invalid mnemonic';
@@ -35,8 +33,8 @@ function salt(password) {
     return 'mnemonic' + (password || '');
 }
 function mnemonicToSeed(mnemonic, password) {
-    const mnemonicBuffer = Buffer.from(unorm.nfkd(mnemonic), 'utf8');
-    const saltBuffer = Buffer.from(salt(unorm.nfkd(password)), 'utf8');
+    const mnemonicBuffer = Buffer.from((mnemonic || '').normalize('NFKD'), 'utf8');
+    const saltBuffer = Buffer.from(salt((password || '').normalize('NFKD')), 'utf8');
     return pbkdf2_1.pbkdf2Sync(mnemonicBuffer, saltBuffer, 2048, 64, 'sha512');
 }
 exports.mnemonicToSeed = mnemonicToSeed;
@@ -47,8 +45,8 @@ exports.mnemonicToSeedHex = mnemonicToSeedHex;
 function mnemonicToSeedAsync(mnemonic, password) {
     return new Promise((resolve, reject) => {
         try {
-            const mnemonicBuffer = Buffer.from(unorm.nfkd(mnemonic), 'utf8');
-            const saltBuffer = Buffer.from(salt(unorm.nfkd(password)), 'utf8');
+            const mnemonicBuffer = Buffer.from((mnemonic || '').normalize('NFKD'), 'utf8');
+            const saltBuffer = Buffer.from(salt((password || '').normalize('NFKD')), 'utf8');
             pbkdf2_1.pbkdf2(mnemonicBuffer, saltBuffer, 2048, 64, 'sha512', (err, data) => {
                 if (err)
                     return reject(err);
@@ -72,7 +70,7 @@ function mnemonicToEntropy(mnemonic, wordlist) {
     if (!wordlist) {
         throw new Error(WORDLIST_REQUIRED);
     }
-    const words = unorm.nfkd(mnemonic).split(' ');
+    const words = (mnemonic || '').normalize('NFKD').split(' ');
     if (words.length % 3 !== 0)
         throw new Error(INVALID_MNEMONIC);
     // convert word indices to 11 bit binary strings
