@@ -1,9 +1,8 @@
 var bip39 = require('../')
-var Buffer = require('safe-buffer').Buffer
 var download = require('../util/wordlists').download
 var WORDLISTS = {
-  english: require('../wordlists/english.json'),
-  japanese: require('../wordlists/japanese.json'),
+  english: require('../src/wordlists/english.json'),
+  japanese: require('../src/wordlists/japanese.json'),
   custom: require('./wordlist.json')
 }
 
@@ -19,9 +18,9 @@ function testVector (description, wordlist, password, v, i) {
     t.plan(6)
 
     t.equal(bip39.mnemonicToEntropy(vmnemonic, wordlist), ventropy, 'mnemonicToEntropy returns ' + ventropy.slice(0, 40) + '...')
-    t.equal(bip39.mnemonicToSeedHex(vmnemonic, password), vseedHex, 'mnemonicToSeedHex returns ' + vseedHex.slice(0, 40) + '...')
-    bip39.mnemonicToSeedHexAsync(vmnemonic, password).then(function (asyncSeedHex) {
-      t.equal(asyncSeedHex, vseedHex, 'mnemonicToSeedHexAsync returns ' + vseedHex.slice(0, 40) + '...')
+    t.equal(bip39.mnemonicToSeedSync(vmnemonic, password).toString('hex'), vseedHex, 'mnemonicToSeedSync returns ' + vseedHex.slice(0, 40) + '...')
+    bip39.mnemonicToSeed(vmnemonic, password).then(function (asyncSeed) {
+      t.equal(asyncSeed.toString('hex'), vseedHex, 'mnemonicToSeed returns ' + vseedHex.slice(0, 40) + '...')
     })
     t.equal(bip39.entropyToMnemonic(ventropy, wordlist), vmnemonic, 'entropyToMnemonic returns ' + vmnemonic.slice(0, 40) + '...')
 
@@ -34,6 +33,46 @@ function testVector (description, wordlist, password, v, i) {
 vectors.english.forEach(function (v, i) { testVector('English', undefined, 'TREZOR', v, i) })
 vectors.japanese.forEach(function (v, i) { testVector('Japanese', WORDLISTS.japanese, '㍍ガバヴァぱばぐゞちぢ十人十色', v, i) })
 vectors.custom.forEach(function (v, i) { testVector('Custom', WORDLISTS.custom, undefined, v, i) })
+
+test('getDefaultWordlist returns "english"', function (t) {
+  t.plan(1)
+  const english = bip39.getDefaultWordlist()
+  t.equal(english, 'english')
+  // TODO: Test that Error throws when called if no wordlists are compiled with bip39
+})
+
+test('setDefaultWordlist changes default wordlist', function (t) {
+  t.plan(4)
+  const english = bip39.getDefaultWordlist()
+  t.equal(english, 'english')
+
+  bip39.setDefaultWordlist('italian')
+
+  const italian = bip39.getDefaultWordlist()
+  t.equal(italian, 'italian')
+
+  const phraseItalian = bip39.entropyToMnemonic('00000000000000000000000000000000')
+  t.equal(phraseItalian.slice(0, 5), 'abaco')
+
+  bip39.setDefaultWordlist('english')
+
+  const phraseEnglish = bip39.entropyToMnemonic('00000000000000000000000000000000')
+  t.equal(phraseEnglish.slice(0, 7), 'abandon')
+})
+
+test('setDefaultWordlist throws on unknown wordlist', function (t) {
+  t.plan(2)
+  const english = bip39.getDefaultWordlist()
+  t.equal(english, 'english')
+
+  try {
+    bip39.setDefaultWordlist('abcdefghijklmnop')
+  } catch (error) {
+    t.equal(error.message, 'Could not find wordlist for language "abcdefghijklmnop"')
+    return
+  }
+  t.assert(false)
+})
 
 test('invalid entropy', function (t) {
   t.plan(3)
@@ -61,8 +100,8 @@ test('UTF8 passwords', function (t) {
     var password = '㍍ガバヴァぱばぐゞちぢ十人十色'
     var normalizedPassword = 'メートルガバヴァぱばぐゞちぢ十人十色'
 
-    t.equal(bip39.mnemonicToSeedHex(vmnemonic, password), vseedHex, 'mnemonicToSeedHex normalizes passwords')
-    t.equal(bip39.mnemonicToSeedHex(vmnemonic, normalizedPassword), vseedHex, 'mnemonicToSeedHex leaves normalizes passwords as-is')
+    t.equal(bip39.mnemonicToSeedSync(vmnemonic, password).toString('hex'), vseedHex, 'mnemonicToSeedSync normalizes passwords')
+    t.equal(bip39.mnemonicToSeedSync(vmnemonic, normalizedPassword).toString('hex'), vseedHex, 'mnemonicToSeedSync leaves normalizes passwords as-is')
   })
 })
 
