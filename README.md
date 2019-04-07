@@ -35,6 +35,12 @@ $ browserify -r bip39 -s bip39 \
 ```
 
  This will create a bundle that only contains the chinese_simplified wordlist, and it will be the default wordlist for all calls without explicit wordlists.
+ 
+ You can also do this in Webpack using the `IgnorePlugin`. Here is an example of excluding all non-English wordlists
+ 
+ ```javascript
+ new webpack.IgnorePlugin(/^\.\/(?!english)/, /bip39\/src\/wordlists$/),
+ ```
 
  This is how it will look in the browser console.
 
