@@ -1,12 +1,19 @@
 {
   "name": "bip39",
-  "version": "2.5.0",
+  "version": "3.0.0",
   "description": "Bitcoin BIP39: Mnemonic code for generating deterministic keys",
-  "main": "index.js",
+  "main": "src/index.js",
+  "types": "./types/index.d.ts",
   "scripts": {
+    "build": "npm run clean && tsc -p tsconfig.json",
+    "clean": "rm -rf src",
     "coverage": "nyc --branches 100 --functions 100 --check-coverage npm run unit",
-    "standard": "standard",
-    "test": "npm run standard && npm run unit",
+    "format": "npm run prettier -- --write",
+    "format:ci": "npm run prettier -- --check",
+    "gitdiff:ci": "npm run build && git diff --exit-code",
+    "lint": "tslint -p tsconfig.json -c tslint.json",
+    "prettier": "prettier 'ts_src/**/*.ts' --ignore-path ./.prettierignore",
+    "test": "npm run build && npm run format:ci && npm run lint && npm run unit",
     "unit": "tape test/*.js",
     "update": "node -e \"require('./util/wordlists').update()\""
   },
@@ -20,10 +27,15 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/weilu/bip39.git"
+    "url": "https://github.com/bitcoinjs/bip39.git"
   },
   "license": "ISC",
+  "files": [
+    "src",
+    "types"
+  ],
   "dependencies": {
+    "@types/node": "11.11.6",
     "create-hash": "^1.1.0",
     "pbkdf2": "^3.0.9",
     "randombytes": "^2.0.1",
@@ -33,10 +45,15 @@
     "unorm": "^1.3.3"
   },
   "devDependencies": {
+    "@types/create-hash": "1.2.0",
+    "@types/pbkdf2": "3.0.0",
+    "@types/randombytes": "2.0.0",
     "node-fetch": "^1.6.3",
-    "nyc": "^8.3.0",
+    "nyc": "^13.1.0",
+    "prettier": "1.16.4",
     "proxyquire": "^1.7.10",
-    "standard": "^10.0.2",
-    "tape": "^4.6.2"
+    "tape": "^4.6.2",
+    "tslint": "5.14.0",
+    "typescript": "3.3.4000"
   }
 }
