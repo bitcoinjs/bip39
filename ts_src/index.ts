@@ -39,7 +39,10 @@ function salt(password?: string): string {
   return 'mnemonic' + (password || '');
 }
 
-export function mnemonicToSeedSync(mnemonic: string, password: string): Buffer {
+export function mnemonicToSeedSync(
+  mnemonic: string,
+  password?: string,
+): Buffer {
   const mnemonicBuffer = Buffer.from(
     (mnemonic || '').normalize('NFKD'),
     'utf8',
@@ -54,7 +57,7 @@ export function mnemonicToSeedSync(mnemonic: string, password: string): Buffer {
 
 export function mnemonicToSeed(
   mnemonic: string,
-  password: string,
+  password?: string,
 ): Promise<Buffer> {
   return new Promise(
     (resolve, reject): void => {
