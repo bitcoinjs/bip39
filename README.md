@@ -41,7 +41,7 @@ $ browserify -r bip39 -s bip39 \
  ```javascript
  ...
  plugins: [
-   new webpack.IgnorePlugin(/^\.\/(?!english)/, /bip39\/src\/wordlists$/),
+   new webpack.IgnorePlugin(/^\.\/wordlists\/(?!english)/, /bip39\/src$/),
  ],
  ...
  ```
