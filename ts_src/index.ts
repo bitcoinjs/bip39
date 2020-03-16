@@ -12,6 +12,10 @@ const WORDLIST_REQUIRED =
   'A wordlist is required but a default could not be found.\n' +
   'Please explicitly pass a 2048 word array explicitly.';
 
+function normalize(str?: string): string {
+  return (str || '').normalize('NFKD');
+}
+
 function lpad(str: string, padString: string, length: number): string {
   while (str.length < length) str = padString + str;
   return str;
@@ -32,7 +36,7 @@ function deriveChecksumBits(entropyBuffer: Buffer): string {
     .update(entropyBuffer)
     .digest();
 
-  return bytesToBinary([...hash]).slice(0, CS);
+  return bytesToBinary(Array.from(hash)).slice(0, CS);
 }
 
 function salt(password?: string): string {
@@ -43,14 +47,8 @@ export function mnemonicToSeedSync(
   mnemonic: string,
   password?: string,
 ): Buffer {
-  const mnemonicBuffer = Buffer.from(
-    (mnemonic || '').normalize('NFKD'),
-    'utf8',
-  );
-  const saltBuffer = Buffer.from(
-    salt((password || '').normalize('NFKD')),
-    'utf8',
-  );
+  const mnemonicBuffer = Buffer.from(normalize(mnemonic), 'utf8');
+  const saltBuffer = Buffer.from(salt(normalize(password)), 'utf8');
 
   return pbkdf2Sync(mnemonicBuffer, saltBuffer, 2048, 64, 'sha512');
 }
@@ -62,14 +60,8 @@ export function mnemonicToSeed(
   return new Promise(
     (resolve, reject): void => {
       try {
-        const mnemonicBuffer = Buffer.from(
-          (mnemonic || '').normalize('NFKD'),
-          'utf8',
-        );
-        const saltBuffer = Buffer.from(
-          salt((password || '').normalize('NFKD')),
-          'utf8',
-        );
+        const mnemonicBuffer = Buffer.from(normalize(mnemonic), 'utf8');
+        const saltBuffer = Buffer.from(salt(normalize(password)), 'utf8');
         pbkdf2(mnemonicBuffer, saltBuffer, 2048, 64, 'sha512', (err, data) => {
           if (err) return reject(err);
           else return resolve(data);
@@ -90,7 +82,7 @@ export function mnemonicToEntropy(
     throw new Error(WORDLIST_REQUIRED);
   }
 
-  const words = (mnemonic || '').normalize('NFKD').split(' ');
+  const words = normalize(mnemonic).split(' ');
   if (words.length % 3 !== 0) throw new Error(INVALID_MNEMONIC);
 
   // convert word indices to 11 bit binary strings
@@ -136,7 +128,7 @@ export function entropyToMnemonic(
   if (entropy.length > 32) throw new TypeError(INVALID_ENTROPY);
   if (entropy.length % 4 !== 0) throw new TypeError(INVALID_ENTROPY);
 
-  const entropyBits = bytesToBinary([...entropy]);
+  const entropyBits = bytesToBinary(Array.from(entropy));
   const checksumBits = deriveChecksumBits(entropy);
 
   const bits = entropyBits + checksumBits;

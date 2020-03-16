@@ -1,6 +1,6 @@
 {
   "name": "bip39",
-  "version": "3.0.1",
+  "version": "3.0.2",
   "description": "Bitcoin BIP39: Mnemonic code for generating deterministic keys",
   "main": "src/index.js",
   "types": "./types/index.d.ts",
@@ -45,7 +45,7 @@
     "@types/pbkdf2": "3.0.0",
     "@types/randombytes": "2.0.0",
     "node-fetch": "^1.6.3",
-    "nyc": "^13.1.0",
+    "nyc": "^14.1.1",
     "prettier": "1.16.4",
     "proxyquire": "^1.7.10",
     "tape": "^4.6.2",
