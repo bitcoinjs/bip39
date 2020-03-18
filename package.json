@@ -45,11 +45,11 @@
     "@types/pbkdf2": "3.0.0",
     "@types/randombytes": "2.0.0",
     "node-fetch": "^1.6.3",
-    "nyc": "^14.1.1",
+    "nyc": "^15.0.0",
     "prettier": "1.16.4",
     "proxyquire": "^1.7.10",
-    "tape": "^4.6.2",
-    "tslint": "5.14.0",
+    "tape": "^4.13.2",
+    "tslint": "^6.1.0",
     "typescript": "3.3.4000"
   }
 }

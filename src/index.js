@@ -22,7 +22,7 @@ function binaryToByte(bin) {
     return parseInt(bin, 2);
 }
 function bytesToBinary(bytes) {
-    return bytes.map(x => lpad(x.toString(2), '0', 8)).join('');
+    return bytes.map((x) => lpad(x.toString(2), '0', 8)).join('');
 }
 function deriveChecksumBits(entropyBuffer) {
     const ENT = entropyBuffer.length * 8;
@@ -69,7 +69,7 @@ function mnemonicToEntropy(mnemonic, wordlist) {
         throw new Error(INVALID_MNEMONIC);
     // convert word indices to 11 bit binary strings
     const bits = words
-        .map(word => {
+        .map((word) => {
         const index = wordlist.indexOf(word);
         if (index === -1)
             throw new Error(INVALID_MNEMONIC);
@@ -113,7 +113,7 @@ function entropyToMnemonic(entropy, wordlist) {
     const checksumBits = deriveChecksumBits(entropy);
     const bits = entropyBits + checksumBits;
     const chunks = bits.match(/(.{1,11})/g);
-    const words = chunks.map(binary => {
+    const words = chunks.map((binary) => {
         const index = binaryToByte(binary);
         return wordlist[index];
     });
@@ -151,7 +151,7 @@ exports.setDefaultWordlist = setDefaultWordlist;
 function getDefaultWordlist() {
     if (!DEFAULT_WORDLIST)
         throw new Error('No Default Wordlist set');
-    return Object.keys(_wordlists_1.wordlists).filter(lang => {
+    return Object.keys(_wordlists_1.wordlists).filter((lang) => {
         if (lang === 'JA' || lang === 'EN')
             return false;
         return _wordlists_1.wordlists[lang].every((word, index) => word === DEFAULT_WORDLIST[index]);
