@@ -26,7 +26,7 @@ function binaryToByte(bin: string): number {
 }
 
 function bytesToBinary(bytes: number[]): string {
-  return bytes.map(x => lpad(x.toString(2), '0', 8)).join('');
+  return bytes.map((x: number): string => lpad(x.toString(2), '0', 8)).join('');
 }
 
 function deriveChecksumBits(entropyBuffer: Buffer): string {
@@ -62,10 +62,17 @@ export function mnemonicToSeed(
       try {
         const mnemonicBuffer = Buffer.from(normalize(mnemonic), 'utf8');
         const saltBuffer = Buffer.from(salt(normalize(password)), 'utf8');
-        pbkdf2(mnemonicBuffer, saltBuffer, 2048, 64, 'sha512', (err, data) => {
-          if (err) return reject(err);
-          else return resolve(data);
-        });
+        pbkdf2(
+          mnemonicBuffer,
+          saltBuffer,
+          2048,
+          64,
+          'sha512',
+          (err: Error, data: Buffer): void => {
+            if (err) return reject(err);
+            else return resolve(data);
+          },
+        );
       } catch (error) {
         return reject(error);
       }
@@ -87,12 +94,14 @@ export function mnemonicToEntropy(
 
   // convert word indices to 11 bit binary strings
   const bits = words
-    .map(word => {
-      const index = wordlist!.indexOf(word);
-      if (index === -1) throw new Error(INVALID_MNEMONIC);
+    .map(
+      (word: string): string => {
+        const index = wordlist!.indexOf(word);
+        if (index === -1) throw new Error(INVALID_MNEMONIC);
 
-      return lpad(index.toString(2), '0', 11);
-    })
+        return lpad(index.toString(2), '0', 11);
+      },
+    )
     .join('');
 
   // split the binary string into ENT/CS
@@ -133,10 +142,12 @@ export function entropyToMnemonic(
 
   const bits = entropyBits + checksumBits;
   const chunks = bits.match(/(.{1,11})/g)!;
-  const words = chunks.map(binary => {
-    const index = binaryToByte(binary);
-    return wordlist![index];
-  });
+  const words = chunks.map(
+    (binary: string): string => {
+      const index = binaryToByte(binary);
+      return wordlist![index];
+    },
+  );
 
   return wordlist[0] === '\u3042\u3044\u3053\u304f\u3057\u3093' // Japanese wordlist
     ? words.join('\u3000')
@@ -177,12 +188,15 @@ export function setDefaultWordlist(language: string): void {
 
 export function getDefaultWordlist(): string {
   if (!DEFAULT_WORDLIST) throw new Error('No Default Wordlist set');
-  return Object.keys(wordlists).filter(lang => {
-    if (lang === 'JA' || lang === 'EN') return false;
-    return wordlists[lang].every(
-      (word, index) => word === DEFAULT_WORDLIST![index],
-    );
-  })[0];
+  return Object.keys(wordlists).filter(
+    (lang: string): boolean => {
+      if (lang === 'JA' || lang === 'EN') return false;
+      return wordlists[lang].every(
+        (word: string, index: number): boolean =>
+          word === DEFAULT_WORDLIST![index],
+      );
+    },
+  )[0];
 }
 
 export { wordlists } from './_wordlists';
