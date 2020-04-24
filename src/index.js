@@ -5,6 +5,8 @@ const pbkdf2_1 = require("pbkdf2");
 const randomBytes = require("randombytes");
 const _wordlists_1 = require("./_wordlists");
 let DEFAULT_WORDLIST = _wordlists_1._default;
+let ENTROPY_MIN = 16;
+let ENTROPY_MAX = 32;
 const INVALID_MNEMONIC = 'Invalid mnemonic';
 const INVALID_ENTROPY = 'Invalid entropy';
 const INVALID_CHECKSUM = 'Invalid mnemonic checksum';
@@ -82,9 +84,9 @@ function mnemonicToEntropy(mnemonic, wordlist) {
     const checksumBits = bits.slice(dividerIndex);
     // calculate the checksum and compare
     const entropyBytes = entropyBits.match(/(.{1,8})/g).map(binaryToByte);
-    if (entropyBytes.length < 16)
+    if (entropyBytes.length < ENTROPY_MIN)
         throw new Error(INVALID_ENTROPY);
-    if (entropyBytes.length > 32)
+    if (entropyBytes.length > ENTROPY_MAX)
         throw new Error(INVALID_ENTROPY);
     if (entropyBytes.length % 4 !== 0)
         throw new Error(INVALID_ENTROPY);
@@ -103,9 +105,9 @@ function entropyToMnemonic(entropy, wordlist) {
         throw new Error(WORDLIST_REQUIRED);
     }
     // 128 <= ENT <= 256
-    if (entropy.length < 16)
+    if (entropy.length < ENTROPY_MIN)
         throw new TypeError(INVALID_ENTROPY);
-    if (entropy.length > 32)
+    if (entropy.length > ENTROPY_MAX)
         throw new TypeError(INVALID_ENTROPY);
     if (entropy.length % 4 !== 0)
         throw new TypeError(INVALID_ENTROPY);
@@ -158,5 +160,18 @@ function getDefaultWordlist() {
     })[0];
 }
 exports.getDefaultWordlist = getDefaultWordlist;
+function setEntropyConstraints(min, max) {
+    if (min <= 0)
+        throw new Error(INVALID_ENTROPY);
+    if (max < min)
+        throw new Error(INVALID_ENTROPY);
+    if (min % 4 !== 0)
+        throw new Error(INVALID_ENTROPY);
+    if (max % 4 !== 0)
+        throw new Error(INVALID_ENTROPY);
+    ENTROPY_MIN = min;
+    ENTROPY_MAX = max;
+}
+exports.setEntropyConstraints = setEntropyConstraints;
 var _wordlists_2 = require("./_wordlists");
 exports.wordlists = _wordlists_2.wordlists;

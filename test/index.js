@@ -90,6 +90,34 @@ test('invalid entropy', function (t) {
   }, /^TypeError: Invalid entropy$/, 'throws for entropy that is larger than 1024')
 })
 
+test('setEntropyConstraints(min, max)', function (t) {
+  t.plan(6)
+
+  t.throws(function () {
+    bip39.setEntropyConstraints(0, 32)
+  }, /^Error: Invalid entropy$/, 'throws for min that\'s equal to 0')
+
+  t.throws(function () {
+    bip39.setEntropyConstraints(-4, 32)
+  }, /^Error: Invalid entropy$/, 'throws for min that\'s less than 0')
+
+  t.throws(function () {
+    bip39.setEntropyConstraints(3, 32)
+  }, /^Error: Invalid entropy$/, 'throws for min that\'s not a multitude of 4 bytes')
+
+  t.throws(function () {
+    bip39.setEntropyConstraints(4, 33)
+  }, /^Error: Invalid entropy$/, 'throws for max that\'s not a multitude of 4 bytes')
+
+  t.throws(function () {
+    bip39.setEntropyConstraints(4, 33)
+  }, /^Error: Invalid entropy$/, 'throws for max that\'s less than min')
+
+  bip39.setEntropyConstraints(8, 32)
+  const mnemonic = bip39.generateMnemonic(64)
+  t.equals(mnemonic.split(' ').length, 6, 'can create mnemonic below default min entropy')
+})
+
 test('UTF8 passwords', function (t) {
   t.plan(vectors.japanese.length * 2)
 

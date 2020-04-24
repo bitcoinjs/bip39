@@ -5,6 +5,8 @@ import { _default as _DEFAULT_WORDLIST, wordlists } from './_wordlists';
 
 let DEFAULT_WORDLIST: string[] | undefined = _DEFAULT_WORDLIST;
 
+let ENTROPY_MIN = 16;
+let ENTROPY_MAX = 32;
 const INVALID_MNEMONIC = 'Invalid mnemonic';
 const INVALID_ENTROPY = 'Invalid entropy';
 const INVALID_CHECKSUM = 'Invalid mnemonic checksum';
@@ -111,8 +113,8 @@ export function mnemonicToEntropy(
 
   // calculate the checksum and compare
   const entropyBytes = entropyBits.match(/(.{1,8})/g)!.map(binaryToByte);
-  if (entropyBytes.length < 16) throw new Error(INVALID_ENTROPY);
-  if (entropyBytes.length > 32) throw new Error(INVALID_ENTROPY);
+  if (entropyBytes.length < ENTROPY_MIN) throw new Error(INVALID_ENTROPY);
+  if (entropyBytes.length > ENTROPY_MAX) throw new Error(INVALID_ENTROPY);
   if (entropyBytes.length % 4 !== 0) throw new Error(INVALID_ENTROPY);
 
   const entropy = Buffer.from(entropyBytes);
@@ -133,8 +135,8 @@ export function entropyToMnemonic(
   }
 
   // 128 <= ENT <= 256
-  if (entropy.length < 16) throw new TypeError(INVALID_ENTROPY);
-  if (entropy.length > 32) throw new TypeError(INVALID_ENTROPY);
+  if (entropy.length < ENTROPY_MIN) throw new TypeError(INVALID_ENTROPY);
+  if (entropy.length > ENTROPY_MAX) throw new TypeError(INVALID_ENTROPY);
   if (entropy.length % 4 !== 0) throw new TypeError(INVALID_ENTROPY);
 
   const entropyBits = bytesToBinary(Array.from(entropy));
@@ -197,6 +199,15 @@ export function getDefaultWordlist(): string {
       );
     },
   )[0];
+}
+
+export function setEntropyConstraints(min: number, max: number): void {
+  if (min <= 0) throw new Error(INVALID_ENTROPY);
+  if (max < min) throw new Error(INVALID_ENTROPY);
+  if (min % 4 !== 0) throw new Error(INVALID_ENTROPY);
+  if (max % 4 !== 0) throw new Error(INVALID_ENTROPY);
+  ENTROPY_MIN = min;
+  ENTROPY_MAX = max;
 }
 
 export { wordlists } from './_wordlists';
