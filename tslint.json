@@ -3,7 +3,7 @@
   "extends": ["tslint:recommended"],
   "rules": {
     "arrow-parens": [true, "ban-single-arg-parens"],
-    "curly": false,
+    "curly": true,
     "indent": [
       true,
       "spaces",

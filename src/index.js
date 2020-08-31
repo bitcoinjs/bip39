@@ -10,12 +10,26 @@ const INVALID_ENTROPY = 'Invalid entropy';
 const INVALID_CHECKSUM = 'Invalid mnemonic checksum';
 const WORDLIST_REQUIRED = 'A wordlist is required but a default could not be found.\n' +
     'Please explicitly pass a 2048 word array explicitly.';
+function pbkdf2Promise(password, saltMixin, iterations, keylen, digest) {
+    return Promise.resolve().then(() => new Promise((resolve, reject) => {
+        const callback = (err, derivedKey) => {
+            if (err) {
+                return reject(err);
+            }
+            else {
+                return resolve(derivedKey);
+            }
+        };
+        pbkdf2_1.pbkdf2(password, saltMixin, iterations, keylen, digest, callback);
+    }));
+}
 function normalize(str) {
     return (str || '').normalize('NFKD');
 }
 function lpad(str, padString, length) {
-    while (str.length < length)
+    while (str.length < length) {
         str = padString + str;
+    }
     return str;
 }
 function binaryToByte(bin) {
@@ -42,20 +56,10 @@ function mnemonicToSeedSync(mnemonic, password) {
 }
 exports.mnemonicToSeedSync = mnemonicToSeedSync;
 function mnemonicToSeed(mnemonic, password) {
-    return new Promise((resolve, reject) => {
-        try {
-            const mnemonicBuffer = Buffer.from(normalize(mnemonic), 'utf8');
-            const saltBuffer = Buffer.from(salt(normalize(password)), 'utf8');
-            pbkdf2_1.pbkdf2(mnemonicBuffer, saltBuffer, 2048, 64, 'sha512', (err, data) => {
-                if (err)
-                    return reject(err);
-                else
-                    return resolve(data);
-            });
-        }
-        catch (error) {
-            return reject(error);
-        }
+    return Promise.resolve().then(() => {
+        const mnemonicBuffer = Buffer.from(normalize(mnemonic), 'utf8');
+        const saltBuffer = Buffer.from(salt(normalize(password)), 'utf8');
+        return pbkdf2Promise(mnemonicBuffer, saltBuffer, 2048, 64, 'sha512');
     });
 }
 exports.mnemonicToSeed = mnemonicToSeed;
@@ -65,14 +69,16 @@ function mnemonicToEntropy(mnemonic, wordlist) {
         throw new Error(WORDLIST_REQUIRED);
     }
     const words = normalize(mnemonic).split(' ');
-    if (words.length % 3 !== 0)
+    if (words.length % 3 !== 0) {
         throw new Error(INVALID_MNEMONIC);
+    }
     // convert word indices to 11 bit binary strings
     const bits = words
         .map((word) => {
         const index = wordlist.indexOf(word);
-        if (index === -1)
+        if (index === -1) {
             throw new Error(INVALID_MNEMONIC);
+        }
         return lpad(index.toString(2), '0', 11);
     })
         .join('');
@@ -82,33 +88,41 @@ function mnemonicToEntropy(mnemonic, wordlist) {
     const checksumBits = bits.slice(dividerIndex);
     // calculate the checksum and compare
     const entropyBytes = entropyBits.match(/(.{1,8})/g).map(binaryToByte);
-    if (entropyBytes.length < 16)
+    if (entropyBytes.length < 16) {
         throw new Error(INVALID_ENTROPY);
-    if (entropyBytes.length > 32)
+    }
+    if (entropyBytes.length > 32) {
         throw new Error(INVALID_ENTROPY);
-    if (entropyBytes.length % 4 !== 0)
+    }
+    if (entropyBytes.length % 4 !== 0) {
         throw new Error(INVALID_ENTROPY);
+    }
     const entropy = Buffer.from(entropyBytes);
     const newChecksum = deriveChecksumBits(entropy);
-    if (newChecksum !== checksumBits)
+    if (newChecksum !== checksumBits) {
         throw new Error(INVALID_CHECKSUM);
+    }
     return entropy.toString('hex');
 }
 exports.mnemonicToEntropy = mnemonicToEntropy;
 function entropyToMnemonic(entropy, wordlist) {
-    if (!Buffer.isBuffer(entropy))
+    if (!Buffer.isBuffer(entropy)) {
         entropy = Buffer.from(entropy, 'hex');
+    }
     wordlist = wordlist || DEFAULT_WORDLIST;
     if (!wordlist) {
         throw new Error(WORDLIST_REQUIRED);
     }
     // 128 <= ENT <= 256
-    if (entropy.length < 16)
+    if (entropy.length < 16) {
         throw new TypeError(INVALID_ENTROPY);
-    if (entropy.length > 32)
+    }
+    if (entropy.length > 32) {
         throw new TypeError(INVALID_ENTROPY);
-    if (entropy.length % 4 !== 0)
+    }
+    if (entropy.length % 4 !== 0) {
         throw new TypeError(INVALID_ENTROPY);
+    }
     const entropyBits = bytesToBinary(Array.from(entropy));
     const checksumBits = deriveChecksumBits(entropy);
     const bits = entropyBits + checksumBits;
@@ -124,8 +138,9 @@ function entropyToMnemonic(entropy, wordlist) {
 exports.entropyToMnemonic = entropyToMnemonic;
 function generateMnemonic(strength, rng, wordlist) {
     strength = strength || 128;
-    if (strength % 32 !== 0)
+    if (strength % 32 !== 0) {
         throw new TypeError(INVALID_ENTROPY);
+    }
     rng = rng || randomBytes;
     return entropyToMnemonic(rng(strength / 8), wordlist);
 }
@@ -142,18 +157,22 @@ function validateMnemonic(mnemonic, wordlist) {
 exports.validateMnemonic = validateMnemonic;
 function setDefaultWordlist(language) {
     const result = _wordlists_1.wordlists[language];
-    if (result)
+    if (result) {
         DEFAULT_WORDLIST = result;
-    else
+    }
+    else {
         throw new Error('Could not find wordlist for language "' + language + '"');
+    }
 }
 exports.setDefaultWordlist = setDefaultWordlist;
 function getDefaultWordlist() {
-    if (!DEFAULT_WORDLIST)
+    if (!DEFAULT_WORDLIST) {
         throw new Error('No Default Wordlist set');
+    }
     return Object.keys(_wordlists_1.wordlists).filter((lang) => {
-        if (lang === 'JA' || lang === 'EN')
+        if (lang === 'JA' || lang === 'EN') {
             return false;
+        }
         return _wordlists_1.wordlists[lang].every((word, index) => word === DEFAULT_WORDLIST[index]);
     })[0];
 }
