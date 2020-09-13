@@ -87,6 +87,62 @@ undefined
 npm install bip39
 ```
 
+## Removing wordlists from webpack/browserify
+
+Browserify/Webpack bundles can get very large if you include all the wordlists, so you can now exclude wordlists to make your bundle lighter.
+
+For example, if we want to exclude all wordlists besides chinese_simplified, you could build using the browserify command below.
+
+```bash
+$ browserify -r bip39 -s bip39 \
+  --exclude=./wordlists/english.json \
+  --exclude=./wordlists/japanese.json \
+  --exclude=./wordlists/spanish.json \
+  --exclude=./wordlists/italian.json \
+  --exclude=./wordlists/french.json \
+  --exclude=./wordlists/korean.json \
+  --exclude=./wordlists/chinese_traditional.json \
+   > bip39.browser.js
+```
+
+This will create a bundle that only contains the chinese_simplified wordlist, and it will be the default wordlist for all calls without explicit wordlists.
+
+This is how it will look in the browser console.
+
+```javascript
+> bip39.entropyToMnemonic('00000000000000000000000000000000')
+"的 的 的 的 的 的 的 的 的 的 的 在"
+> bip39.wordlists.chinese_simplified
+Array(2048) [ "的", "一", "是", "在", "不", "了", "有", "和", "人", "这", … ]
+> bip39.wordlists.english
+undefined
+> bip39.wordlists.japanese
+undefined
+> bip39.wordlists.spanish
+undefined
+> bip39.wordlists.italian
+undefined
+> bip39.wordlists.french
+undefined
+> bip39.wordlists.korean
+undefined
+> bip39.wordlists.chinese_traditional
+undefined
+```
+
+For a list of supported wordlists check the wordlists folder. The name of the json file (minus the extension) is the name of the key to access the wordlist.
+
+You can also change the default wordlist at runtime if you dislike the wordlist you were given as default.
+
+```javascript
+> bip39.entropyToMnemonic('00000000000000000000000000000fff')
+"あいこくしん　あいこくしん　あいこくしん　あいこくしん　あいこくしん　あいこくしん　あいこくしん　あいこくしん　あいこくしん　あいこくしん　あまい　ろんり"
+> bip39.setDefaultWordlist('italian')
+undefined
+> bip39.entropyToMnemonic('00000000000000000000000000000fff')
+"abaco abaco abaco abaco abaco abaco abaco abaco abaco abaco aforisma zibetto"
+```
+
 ## Examples
 ``` js
 // Generate a random mnemonic (uses crypto.randomBytes under the hood), defaults to 128-bits of entropy
