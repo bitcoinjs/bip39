@@ -6,12 +6,13 @@ var log = console.log
 var WORDLISTS = [
   'chinese_simplified',
   'chinese_traditional',
+  'czech',
   'english',
   'french',
   'italian',
   'japanese',
-  'spanish',
-  'korean'
+  'korean',
+  'spanish'
 ]
 
 function update () {
