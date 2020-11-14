@@ -8,6 +8,11 @@ exports.wordlists = wordlists;
 let _default;
 exports._default = _default;
 try {
+    exports._default = _default = require('./wordlists/czech.json');
+    wordlists.czech = _default;
+}
+catch (err) { }
+try {
     exports._default = _default = require('./wordlists/chinese_simplified.json');
     wordlists.chinese_simplified = _default;
 }

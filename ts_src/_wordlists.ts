@@ -4,6 +4,10 @@
 const wordlists: { [index: string]: string[] } = {};
 let _default: string[] | undefined;
 try {
+  _default = require('./wordlists/czech.json');
+  wordlists.czech = _default as string[];
+} catch (err) {}
+try {
   _default = require('./wordlists/chinese_simplified.json');
   wordlists.chinese_simplified = _default as string[];
 } catch (err) {}
