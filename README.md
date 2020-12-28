@@ -31,6 +31,7 @@ $ browserify -r bip39 -s bip39 \
   --exclude=./wordlists/french.json \
   --exclude=./wordlists/korean.json \
   --exclude=./wordlists/czech.json \
+  --exclude=./wordlists/portuguese.json \
   --exclude=./wordlists/chinese_traditional.json \
    > bip39.browser.js
 ```
@@ -65,6 +66,10 @@ undefined
 > bip39.wordlists.french
 undefined
 > bip39.wordlists.korean
+undefined
+> bip39.wordlists.czech
+undefined
+> bip39.wordlists.portuguese
 undefined
 > bip39.wordlists.chinese_traditional
 undefined
