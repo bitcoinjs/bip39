@@ -9,7 +9,7 @@ const INVALID_MNEMONIC = 'Invalid mnemonic';
 const INVALID_ENTROPY = 'Invalid entropy';
 const INVALID_CHECKSUM = 'Invalid mnemonic checksum';
 const WORDLIST_REQUIRED = 'A wordlist is required but a default could not be found.\n' +
-    'Please explicitly pass a 2048 word array explicitly.';
+    'Please pass a 2048 word array explicitly.';
 function pbkdf2Promise(password, saltMixin, iterations, keylen, digest) {
     return Promise.resolve().then(() => new Promise((resolve, reject) => {
         const callback = (err, derivedKey) => {
