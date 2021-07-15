@@ -15,7 +15,7 @@ function testVector (description, wordlist, password, v, i) {
   var vseedHex = v[2]
 
   test('for ' + description + '(' + i + '), ' + ventropy, function (t) {
-    t.plan(6)
+    t.plan(7)
 
     t.equal(bip39.mnemonicToEntropy(vmnemonic, wordlist), ventropy, 'mnemonicToEntropy returns ' + ventropy.slice(0, 40) + '...')
     t.equal(bip39.mnemonicToSeedSync(vmnemonic, password).toString('hex'), vseedHex, 'mnemonicToSeedSync returns ' + vseedHex.slice(0, 40) + '...')
@@ -27,6 +27,9 @@ function testVector (description, wordlist, password, v, i) {
     function rng () { return Buffer.from(ventropy, 'hex') }
     t.equal(bip39.generateMnemonic(undefined, rng, wordlist), vmnemonic, 'generateMnemonic returns RNG entropy unmodified')
     t.equal(bip39.validateMnemonic(vmnemonic, wordlist), true, 'validateMnemonic returns true')
+
+    const smnemonic = vmnemonic.normalize('NFKD').split(' ').map(word => word.normalize('NFC').substr(0, 4)).join(' ');
+    t.equal(bip39.validateMnemonic(smnemonic, wordlist), true, 'validateMnemonic returns true on shorter words')
   })
 }
 

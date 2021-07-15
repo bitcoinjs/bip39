@@ -69,6 +69,32 @@ function salt(password?: string): string {
   return 'mnemonic' + (password || '');
 }
 
+function findWordInWordlist(word: string, wordlist: string[]): number {
+  let index: number | undefined;
+  if (word.normalize('NFC').length !== 4) {
+    index = wordlist.indexOf(word);
+    if (index === -1) {
+      throw new Error(INVALID_MNEMONIC);
+    }
+  } else {
+    for (let i = 0; i < wordlist.length; i++) {
+      const w = wordlist[i];
+      if (w.startsWith(word)) {
+        if (index !== undefined) {
+          // Should be impossible.
+          throw new Error(INVALID_MNEMONIC);
+        }
+        index = i;
+      }
+    }
+    if (index === undefined) {
+      throw new Error(INVALID_MNEMONIC);
+    }
+  }
+
+  return index;
+}
+
 export function mnemonicToSeedSync(
   mnemonic: string,
   password?: string,
@@ -110,11 +136,7 @@ export function mnemonicToEntropy(
   const bits = words
     .map(
       (word: string): string => {
-        const index = wordlist!.indexOf(word);
-        if (index === -1) {
-          throw new Error(INVALID_MNEMONIC);
-        }
-
+        const index = findWordInWordlist(word, wordlist!);
         return lpad(index.toString(2), '0', 11);
       },
     )

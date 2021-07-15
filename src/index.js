@@ -49,6 +49,30 @@ function deriveChecksumBits(entropyBuffer) {
 function salt(password) {
     return 'mnemonic' + (password || '');
 }
+function findWordInWordlist(word, wordlist) {
+    let index;
+    if (word.normalize('NFC').length !== 4) {
+        index = wordlist.indexOf(word);
+        if (index === -1) {
+            throw new Error(INVALID_MNEMONIC);
+        }
+    }
+    else {
+        for (let i = 0; i < wordlist.length; i++) {
+            const w = wordlist[i];
+            if (w.startsWith(word)) {
+                if (index !== undefined) {
+                    throw new Error(INVALID_MNEMONIC);
+                }
+                index = i;
+            }
+        }
+        if (index === undefined) {
+            throw new Error(INVALID_MNEMONIC);
+        }
+    }
+    return index;
+}
 function mnemonicToSeedSync(mnemonic, password) {
     const mnemonicBuffer = Buffer.from(normalize(mnemonic), 'utf8');
     const saltBuffer = Buffer.from(salt(normalize(password)), 'utf8');
@@ -75,10 +99,7 @@ function mnemonicToEntropy(mnemonic, wordlist) {
     // convert word indices to 11 bit binary strings
     const bits = words
         .map((word) => {
-        const index = wordlist.indexOf(word);
-        if (index === -1) {
-            throw new Error(INVALID_MNEMONIC);
-        }
+        const index = findWordInWordlist(word, wordlist);
         return lpad(index.toString(2), '0', 11);
     })
         .join('');
