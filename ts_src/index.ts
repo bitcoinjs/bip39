@@ -1,6 +1,7 @@
 import * as createHash from 'create-hash';
 import { pbkdf2, pbkdf2Sync } from 'pbkdf2';
 import * as randomBytes from 'randombytes';
+import { Buffer } from 'buffer';
 import { _default as _DEFAULT_WORDLIST, wordlists } from './_wordlists';
 
 let DEFAULT_WORDLIST: string[] | undefined = _DEFAULT_WORDLIST;

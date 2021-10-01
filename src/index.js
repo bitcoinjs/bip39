@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const createHash = require("create-hash");
 const pbkdf2_1 = require("pbkdf2");
 const randomBytes = require("randombytes");
+const buffer_1 = require("buffer");
 const _wordlists_1 = require("./_wordlists");
 let DEFAULT_WORDLIST = _wordlists_1._default;
 const INVALID_MNEMONIC = 'Invalid mnemonic';
@@ -50,15 +51,15 @@ function salt(password) {
     return 'mnemonic' + (password || '');
 }
 function mnemonicToSeedSync(mnemonic, password) {
-    const mnemonicBuffer = Buffer.from(normalize(mnemonic), 'utf8');
-    const saltBuffer = Buffer.from(salt(normalize(password)), 'utf8');
+    const mnemonicBuffer = buffer_1.Buffer.from(normalize(mnemonic), 'utf8');
+    const saltBuffer = buffer_1.Buffer.from(salt(normalize(password)), 'utf8');
     return pbkdf2_1.pbkdf2Sync(mnemonicBuffer, saltBuffer, 2048, 64, 'sha512');
 }
 exports.mnemonicToSeedSync = mnemonicToSeedSync;
 function mnemonicToSeed(mnemonic, password) {
     return Promise.resolve().then(() => {
-        const mnemonicBuffer = Buffer.from(normalize(mnemonic), 'utf8');
-        const saltBuffer = Buffer.from(salt(normalize(password)), 'utf8');
+        const mnemonicBuffer = buffer_1.Buffer.from(normalize(mnemonic), 'utf8');
+        const saltBuffer = buffer_1.Buffer.from(salt(normalize(password)), 'utf8');
         return pbkdf2Promise(mnemonicBuffer, saltBuffer, 2048, 64, 'sha512');
     });
 }
@@ -97,7 +98,7 @@ function mnemonicToEntropy(mnemonic, wordlist) {
     if (entropyBytes.length % 4 !== 0) {
         throw new Error(INVALID_ENTROPY);
     }
-    const entropy = Buffer.from(entropyBytes);
+    const entropy = buffer_1.Buffer.from(entropyBytes);
     const newChecksum = deriveChecksumBits(entropy);
     if (newChecksum !== checksumBits) {
         throw new Error(INVALID_CHECKSUM);
@@ -106,8 +107,8 @@ function mnemonicToEntropy(mnemonic, wordlist) {
 }
 exports.mnemonicToEntropy = mnemonicToEntropy;
 function entropyToMnemonic(entropy, wordlist) {
-    if (!Buffer.isBuffer(entropy)) {
-        entropy = Buffer.from(entropy, 'hex');
+    if (!buffer_1.Buffer.isBuffer(entropy)) {
+        entropy = buffer_1.Buffer.from(entropy, 'hex');
     }
     wordlist = wordlist || DEFAULT_WORDLIST;
     if (!wordlist) {

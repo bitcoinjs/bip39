@@ -36,6 +36,7 @@
   ],
   "dependencies": {
     "@types/node": "11.11.6",
+    "buffer": "^6.0.3",
     "create-hash": "^1.1.0",
     "pbkdf2": "^3.0.9",
     "randombytes": "^2.0.1"

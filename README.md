@@ -5,6 +5,9 @@
 
 [![js-standard-style](https://cdn.rawgit.com/feross/standard/master/badge.svg)](https://github.com/feross/standard)
 
+Makes this package isomorphic by adding `Buffer` [polyfill](https://www.npmjs.com/package/buffer). Still uses `Buffer` from standard library in node.js.
+
+---
 
 JavaScript implementation of [Bitcoin BIP39](https://github.com/bitcoin/bips/blob/master/bip-0039.mediawiki): Mnemonic code for generating deterministic keys
 
