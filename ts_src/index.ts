@@ -1,6 +1,6 @@
-import * as createHash from 'create-hash';
 import { pbkdf2, pbkdf2Sync } from 'pbkdf2';
 import * as randomBytes from 'randombytes';
+import * as shajs from 'sha.js';
 import { _default as _DEFAULT_WORDLIST, wordlists } from './_wordlists';
 
 let DEFAULT_WORDLIST: string[] | undefined = _DEFAULT_WORDLIST;
@@ -58,7 +58,7 @@ function bytesToBinary(bytes: number[]): string {
 function deriveChecksumBits(entropyBuffer: Buffer): string {
   const ENT = entropyBuffer.length * 8;
   const CS = ENT / 32;
-  const hash = createHash('sha256')
+  const hash = shajs('sha256')
     .update(entropyBuffer)
     .digest();
 

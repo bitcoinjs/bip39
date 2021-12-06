@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const createHash = require("create-hash");
 const pbkdf2_1 = require("pbkdf2");
 const randomBytes = require("randombytes");
+const shajs = require("sha.js");
 const _wordlists_1 = require("./_wordlists");
 let DEFAULT_WORDLIST = _wordlists_1._default;
 const INVALID_MNEMONIC = 'Invalid mnemonic';
@@ -41,7 +41,7 @@ function bytesToBinary(bytes) {
 function deriveChecksumBits(entropyBuffer) {
     const ENT = entropyBuffer.length * 8;
     const CS = ENT / 32;
-    const hash = createHash('sha256')
+    const hash = shajs("sha256")
         .update(entropyBuffer)
         .digest();
     return bytesToBinary(Array.from(hash)).slice(0, CS);
