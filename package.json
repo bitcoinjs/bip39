@@ -36,13 +36,11 @@
   ],
   "dependencies": {
     "@types/node": "11.11.6",
-    "create-hash": "^1.1.0",
     "pbkdf2": "^3.0.9",
     "randombytes": "^2.0.1",
     "sha.js": "^2.4.11"
   },
   "devDependencies": {
-    "@types/create-hash": "1.2.0",
     "@types/pbkdf2": "3.0.0",
     "@types/randombytes": "2.0.0",
     "@types/sha.js": "^2.4.0",
