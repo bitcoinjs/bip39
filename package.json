@@ -44,7 +44,7 @@
     "@types/create-hash": "1.2.0",
     "@types/pbkdf2": "3.0.0",
     "@types/randombytes": "2.0.0",
-    "node-fetch": "^2.6.1",
+    "node-fetch": "^3.1.1",
     "nyc": "^15.0.0",
     "prettier": "1.16.4",
     "proxyquire": "^1.7.10",
