@@ -25,6 +25,7 @@ However, there should be other checks in place, such as checking to make sure th
  ```bash
 $ browserify -r bip39 -s bip39 \
   --exclude=./wordlists/english.json \
+  --exclude=./wordlists/dutch.json \
   --exclude=./wordlists/japanese.json \
   --exclude=./wordlists/spanish.json \
   --exclude=./wordlists/italian.json \
@@ -56,6 +57,8 @@ $ browserify -r bip39 -s bip39 \
 > bip39.wordlists.chinese_simplified
 Array(2048) [ "的", "一", "是", "在", "不", "了", "有", "和", "人", "这", … ]
 > bip39.wordlists.english
+undefined
+> bip39.wordlists.dutch
 undefined
 > bip39.wordlists.japanese
 undefined

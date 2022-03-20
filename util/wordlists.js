@@ -8,6 +8,7 @@ var WORDLISTS = [
   'chinese_traditional',
   'czech',
   'english',
+  'dutch',
   'french',
   'italian',
   'japanese',

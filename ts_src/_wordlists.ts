@@ -41,6 +41,10 @@ try {
   wordlists.portuguese = _default as string[];
 } catch (err) {}
 try {
+  _default = require('./wordlists/dutch.json');
+  wordlists.dutch = _default as string[];
+} catch (err) {}
+try {
   _default = require('./wordlists/english.json');
   wordlists.english = _default as string[];
   wordlists.EN = _default as string[];

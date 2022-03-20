@@ -54,6 +54,11 @@ try {
 }
 catch (err) { }
 try {
+    exports._default = _default = require('./wordlists/dutch.json');
+    wordlists.dutch = _default;
+}
+catch (err) { }
+try {
     exports._default = _default = require('./wordlists/english.json');
     wordlists.english = _default;
     wordlists.EN = _default;
