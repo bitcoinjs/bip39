@@ -35,15 +35,10 @@
     "types"
   ],
   "dependencies": {
-    "@types/node": "11.11.6",
-    "create-hash": "^1.1.0",
-    "pbkdf2": "^3.0.9",
-    "randombytes": "^2.0.1"
+    "@noble/hashes": "^1.2.0",
+    "@types/node": "11.11.6"
   },
   "devDependencies": {
-    "@types/create-hash": "1.2.0",
-    "@types/pbkdf2": "3.0.0",
-    "@types/randombytes": "2.0.0",
     "node-fetch": "2.6.9",
     "nyc": "^15.0.0",
     "prettier": "1.16.4",
