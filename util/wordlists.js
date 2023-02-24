@@ -1,3 +1,4 @@
+/* istanbul ignore file */
 var fetch = require('node-fetch')
 var fs = require('fs')
 var path = require('path')
