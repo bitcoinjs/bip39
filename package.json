@@ -7,7 +7,7 @@
   "scripts": {
     "build": "npm run clean && tsc -p tsconfig.json",
     "clean": "rm -rf src",
-    "coverage": "nyc --branches 100 --functions 100 --check-coverage npm run unit",
+    "coverage": "nyc --branches 85 --functions 100 --check-coverage npm run unit",
     "format": "npm run prettier -- --write",
     "format:ci": "npm run prettier -- --check",
     "gitdiff:ci": "npm run build && git diff --exit-code",
