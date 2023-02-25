@@ -15,21 +15,23 @@ test('README example 1', function (t) {
   t.equal(bip39.mnemonicToEntropy(mnemonic), entropy)
 })
 
-// test('README example 2', function (t) {
-//   const stub = {
-//     randombytes: function (size) {
-//       return Buffer.from('qwertyuiopasdfghjklzxcvbnm[];,./'.slice(0, size), 'utf8')
-//     }
-//   }
-//   const proxiedbip39 = proxyquire('../', stub)
+test('README example 2', function (t) {
+  const stub = {
+    '@noble/hashes/utils': {
+      randomBytes: function (size) {
+        return Uint8Array.from(Buffer.from('qwertyuiopasdfghjklzxcvbnm[];,./'.slice(0, size), 'utf8'))
+      }
+    }
+  }
+  const proxiedbip39 = proxyquire('../', stub)
 
-//   // mnemonic strength defaults to 128 bits
-//   const mnemonic = proxiedbip39.generateMnemonic()
+  // mnemonic strength defaults to 128 bits
+  const mnemonic = proxiedbip39.generateMnemonic()
 
-//   t.plan(2)
-//   t.equal(mnemonic, 'imitate robot frame trophy nuclear regret saddle around inflict case oil spice')
-//   t.equal(bip39.validateMnemonic(mnemonic), true)
-// })
+  t.plan(2)
+  t.equal(mnemonic, 'imitate robot frame trophy nuclear regret saddle around inflict case oil spice')
+  t.equal(bip39.validateMnemonic(mnemonic), true)
+})
 
 test('README example 3', function (t) {
   const mnemonic = 'basket actual'
