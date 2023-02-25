@@ -35,10 +35,10 @@
     "types"
   ],
   "dependencies": {
-    "@noble/hashes": "^1.2.0",
-    "@types/node": "11.11.6"
+    "@noble/hashes": "^1.2.0"
   },
   "devDependencies": {
+    "@types/node": "11.11.6",
     "node-fetch": "2.6.9",
     "nyc": "^15.0.0",
     "prettier": "1.16.4",
