@@ -17,8 +17,10 @@ test('README example 1', function (t) {
 
 test('README example 2', function (t) {
   const stub = {
-    randombytes: function (size) {
-      return Buffer.from('qwertyuiopasdfghjklzxcvbnm[];,./'.slice(0, size), 'utf8')
+    '@noble/hashes/utils': {
+      randomBytes: function (size) {
+        return Uint8Array.from(Buffer.from('qwertyuiopasdfghjklzxcvbnm[];,./'.slice(0, size), 'utf8'))
+      }
     }
   }
   const proxiedbip39 = proxyquire('../', stub)
