@@ -135,6 +135,9 @@ export function entropyToMnemonic(
   wordlist?: string[],
 ): string {
   if (!Buffer.isBuffer(entropy)) {
+    if (entropy.length % 2 !== 0 || /[^0-9a-fA-F]/.test(entropy)) {
+      throw new TypeError(INVALID_ENTROPY);
+    }
     entropy = Buffer.from(entropy, 'hex');
   }
   wordlist = wordlist || DEFAULT_WORDLIST;
