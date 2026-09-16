@@ -1,3 +1,7 @@
+# 3.1.1
+__fixed__
+- Reject malformed hex entropy. This fix is also available in version 2.6.1.
+
 # 3.0.0
 __added__
 - Added TypeScript support (#104)
