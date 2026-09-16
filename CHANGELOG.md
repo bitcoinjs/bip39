@@ -1,3 +1,7 @@
+# 3.1.2
+__fixed__
+- Reject inherited properties when selecting the default wordlist.
+
 # 3.1.1
 __fixed__
 - Reject malformed hex entropy. This fix is also available in version 2.6.1.
