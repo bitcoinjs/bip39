@@ -51,6 +51,54 @@ test('invalid entropy', function (t) {
   }, /^TypeError: Invalid entropy$/, 'throws for entropy that is larger than 1024')
 })
 
+test('invalid hex entropy', function (t) {
+  var validSizes = [16, 20, 24, 28, 32]
+  var entropy = Buffer.alloc(32, 0xab).toString('hex')
+
+  t.plan(validSizes.length + 3)
+
+  validSizes.forEach(function (size) {
+    var invalidEntropy = entropy.slice(0, size * 2) + 'x' + entropy.slice(size * 2 + 1)
+    t.throws(function () {
+      bip39.entropyToMnemonic(invalidEntropy)
+    }, /^TypeError: Invalid entropy$/, 'throws when invalid hex truncates to ' + size + ' bytes')
+  })
+
+  t.throws(function () {
+    bip39.entropyToMnemonic(entropy.slice(0, 32) + 'a')
+  }, /^TypeError: Invalid entropy$/, 'throws for odd-length hex')
+
+  t.throws(function () {
+    bip39.entropyToMnemonic(entropy.slice(0, 32) + ' ' + entropy.slice(32))
+  }, /^TypeError: Invalid entropy$/, 'throws for spaces in hex')
+
+  t.throws(function () {
+    bip39.entropyToMnemonic(entropy.slice(0, 32) + '\n')
+  }, /^TypeError: Invalid entropy$/, 'throws for trailing line breaks')
+})
+
+test('valid hex entropy', function (t) {
+  var validSizes = [16, 20, 24, 28, 32]
+  var entropy = Buffer.alloc(32, 0xab).toString('hex')
+
+  t.plan(validSizes.length * 3 + 2)
+
+  validSizes.forEach(function (size) {
+    var entropyHex = entropy.slice(0, size * 2)
+    var mnemonic = bip39.entropyToMnemonic(entropyHex)
+
+    t.equal(bip39.mnemonicToEntropy(mnemonic), entropyHex, 'round trips ' + size + ' bytes of lowercase hex')
+    t.equal(bip39.entropyToMnemonic(entropyHex.toUpperCase()), mnemonic, 'accepts ' + size + ' bytes of uppercase hex')
+    t.equal(bip39.entropyToMnemonic(Buffer.from(entropyHex, 'hex')), mnemonic, 'accepts ' + size + ' byte Buffers')
+  })
+
+  var entropyHex = entropy.slice(0, 32)
+  var customMnemonic = bip39.entropyToMnemonic(entropyHex, WORDLISTS.custom)
+  var japaneseMnemonic = bip39.entropyToMnemonic(entropyHex, WORDLISTS.japanese)
+  t.equal(bip39.mnemonicToEntropy(customMnemonic, WORDLISTS.custom), entropyHex, 'preserves custom wordlists')
+  t.equal(bip39.mnemonicToEntropy(japaneseMnemonic, WORDLISTS.japanese), entropyHex, 'preserves Japanese wordlists')
+})
+
 test('UTF8 passwords', function (t) {
   t.plan(vectors.japanese.length * 2)
 
