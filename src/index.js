@@ -150,7 +150,9 @@ function validateMnemonic(mnemonic, wordlist) {
 }
 exports.validateMnemonic = validateMnemonic;
 function setDefaultWordlist(language) {
-    const result = _wordlists_1.wordlists[language];
+    const result = Object.prototype.hasOwnProperty.call(_wordlists_1.wordlists, language)
+        ? _wordlists_1.wordlists[language]
+        : undefined;
     if (result) {
         DEFAULT_WORDLIST = result;
     }

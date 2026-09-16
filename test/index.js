@@ -74,6 +74,82 @@ test('setDefaultWordlist throws on unknown wordlist', function (t) {
   t.assert(false)
 })
 
+test('setDefaultWordlist accepts language names and aliases', function (t) {
+  t.plan(4)
+
+  try {
+    bip39.setDefaultWordlist('italian')
+    t.equal(bip39.getDefaultWordlist(), 'italian')
+
+    bip39.setDefaultWordlist('english')
+    t.equal(bip39.getDefaultWordlist(), 'english')
+
+    bip39.setDefaultWordlist('EN')
+    t.equal(bip39.getDefaultWordlist(), 'english')
+
+    bip39.setDefaultWordlist('JA')
+    t.equal(bip39.getDefaultWordlist(), 'japanese')
+  } finally {
+    bip39.setDefaultWordlist('english')
+  }
+})
+
+test('setDefaultWordlist rejects inherited property names', function (t) {
+  var inheritedNames = [
+    '__proto__',
+    'constructor',
+    'toString',
+    'valueOf',
+    'hasOwnProperty',
+    'isPrototypeOf',
+    'propertyIsEnumerable',
+    'toLocaleString',
+    '__defineGetter__',
+    '__defineSetter__',
+    '__lookupGetter__',
+    '__lookupSetter__'
+  ]
+  t.plan(inheritedNames.length)
+
+  try {
+    inheritedNames.forEach(function (name) {
+      bip39.setDefaultWordlist('english')
+      t.throws(function () {
+        bip39.setDefaultWordlist(name)
+      }, new RegExp('^Error: Could not find wordlist for language "' + name + '"$'), 'rejects inherited "' + name + '"')
+    })
+  } finally {
+    bip39.setDefaultWordlist('english')
+  }
+})
+
+test('setDefaultWordlist rejection preserves mnemonic behavior', function (t) {
+  var mnemonic = 'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about'
+  t.plan(6)
+
+  try {
+    bip39.setDefaultWordlist('english')
+
+    t.throws(function () {
+      bip39.setDefaultWordlist('abcdefghijklmnop')
+    }, /^Error: Could not find wordlist for language "abcdefghijklmnop"$/)
+    t.equal(bip39.getDefaultWordlist(), 'english', 'ordinary rejection preserves the default')
+
+    t.throws(function () {
+      bip39.setDefaultWordlist('__proto__')
+    }, /^Error: Could not find wordlist for language "__proto__"$/)
+    t.equal(bip39.getDefaultWordlist(), 'english', 'inherited rejection preserves the default')
+
+    var generated = bip39.generateMnemonic(128, function (size) {
+      return Buffer.alloc(size)
+    })
+    t.equal(generated, mnemonic, 'generation still uses the preserved default')
+    t.equal(bip39.validateMnemonic(generated), true, 'validation still uses the preserved default')
+  } finally {
+    bip39.setDefaultWordlist('english')
+  }
+})
+
 test('invalid entropy', function (t) {
   t.plan(3)
 
