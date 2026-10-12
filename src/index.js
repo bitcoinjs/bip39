@@ -36,6 +36,9 @@ function salt(password) {
     return 'mnemonic' + (password || '');
 }
 function mnemonicToSeedSync(mnemonic, password) {
+    if (typeof mnemonic !== 'string') {
+        throw new TypeError(INVALID_MNEMONIC);
+    }
     const mnemonicBuffer = Uint8Array.from(Buffer.from(normalize(mnemonic), 'utf8'));
     const saltBuffer = Uint8Array.from(Buffer.from(salt(normalize(password)), 'utf8'));
     const res = pbkdf2_1.pbkdf2(sha512_1.sha512, mnemonicBuffer, saltBuffer, {
@@ -46,6 +49,9 @@ function mnemonicToSeedSync(mnemonic, password) {
 }
 exports.mnemonicToSeedSync = mnemonicToSeedSync;
 function mnemonicToSeed(mnemonic, password) {
+    if (typeof mnemonic !== 'string') {
+        throw new TypeError(INVALID_MNEMONIC);
+    }
     const mnemonicBuffer = Uint8Array.from(Buffer.from(normalize(mnemonic), 'utf8'));
     const saltBuffer = Uint8Array.from(Buffer.from(salt(normalize(password)), 'utf8'));
     return pbkdf2_1.pbkdf2Async(sha512_1.sha512, mnemonicBuffer, saltBuffer, {
