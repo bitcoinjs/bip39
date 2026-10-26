@@ -47,6 +47,9 @@ export function mnemonicToSeedSync(
   mnemonic: string,
   password?: string,
 ): Buffer {
+  if (typeof mnemonic !== 'string') {
+    throw new TypeError(INVALID_MNEMONIC);
+  }
   const mnemonicBuffer = Uint8Array.from(
     Buffer.from(normalize(mnemonic), 'utf8'),
   );
@@ -64,6 +67,9 @@ export function mnemonicToSeed(
   mnemonic: string,
   password?: string,
 ): Promise<Buffer> {
+  if (typeof mnemonic !== 'string') {
+    throw new TypeError(INVALID_MNEMONIC);
+  }
   const mnemonicBuffer = Uint8Array.from(
     Buffer.from(normalize(mnemonic), 'utf8'),
   );
