@@ -114,7 +114,10 @@ function mnemonicToEntropy (mnemonic, wordlist) {
 }
 
 function entropyToMnemonic (entropy, wordlist) {
-  if (!Buffer.isBuffer(entropy)) entropy = Buffer.from(entropy, 'hex')
+  if (!Buffer.isBuffer(entropy)) {
+    if (typeof entropy !== 'string' || !/^(?:[0-9a-f]{2})+$/i.test(entropy)) throw new TypeError(INVALID_ENTROPY)
+    entropy = Buffer.from(entropy, 'hex')
+  }
   wordlist = wordlist || DEFAULT_WORDLIST
 
   // 128 <= ENT <= 256
