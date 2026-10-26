@@ -90,6 +90,50 @@ test('invalid entropy', function (t) {
   }, /^TypeError: Invalid entropy$/, 'throws for entropy that is larger than 1024')
 })
 
+test('valid hex and Buffer entropy', function (t) {
+  var byteLengths = [16, 20, 24, 28, 32]
+
+  t.plan(byteLengths.length * 3 + 1)
+
+  byteLengths.forEach(function (byteLength) {
+    var entropy = new Array(byteLength + 1).join('ab')
+    var mnemonic = bip39.entropyToMnemonic(entropy)
+
+    t.equal(bip39.mnemonicToEntropy(mnemonic), entropy, 'round trips ' + byteLength + ' bytes of hex entropy')
+    t.equal(bip39.mnemonicToEntropy(bip39.entropyToMnemonic(Buffer.from(entropy, 'hex'))), entropy, 'round trips ' + byteLength + ' bytes of Buffer entropy')
+    t.equal(bip39.entropyToMnemonic(entropy.toUpperCase()), mnemonic, 'accepts uppercase hex entropy')
+  })
+
+  var entropy = new Array(16 + 1).join('ab')
+  t.equal(bip39.entropyToMnemonic(entropy, WORDLISTS.custom), bip39.entropyToMnemonic(Buffer.from(entropy, 'hex'), WORDLISTS.custom), 'accepts valid hex with a custom wordlist')
+})
+
+test('invalid hex entropy', function (t) {
+  var byteLengths = [16, 20, 24, 28, 32]
+  var entropy = new Array(32 + 1).join('ab')
+
+  t.plan(byteLengths.length + 3)
+
+  byteLengths.forEach(function (byteLength) {
+    var validPrefix = new Array(byteLength + 1).join('ab')
+    t.throws(function () {
+      bip39.entropyToMnemonic(validPrefix + 'X0')
+    }, /^TypeError: Invalid entropy$/, 'rejects a malformed suffix after ' + byteLength + ' decoded bytes')
+  })
+
+  t.throws(function () {
+    bip39.entropyToMnemonic(entropy.slice(0, 32) + ' ' + entropy.slice(33))
+  }, /^TypeError: Invalid entropy$/, 'rejects embedded whitespace')
+
+  t.throws(function () {
+    bip39.entropyToMnemonic(entropy + 'a\n')
+  }, /^TypeError: Invalid entropy$/, 'rejects a trailing line break')
+
+  t.throws(function () {
+    bip39.entropyToMnemonic(new Array(16 + 1).join('ab') + 'a')
+  }, /^TypeError: Invalid entropy$/, 'rejects odd-length hex entropy')
+})
+
 test('UTF8 passwords', function (t) {
   t.plan(vectors.japanese.length * 2)
 
